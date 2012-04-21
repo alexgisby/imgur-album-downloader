@@ -39,7 +39,7 @@ if len(args) == 1:
 albumURL = args[1]
 
 # Check the URL is actually imgur:
-match = re.match('http\:\/\/(www\.)?imgur\.com/a/([a-zA-Z0-9]+)(#[0-9]+)', albumURL)
+match = re.match('http\:\/\/(www\.)?imgur\.com/a/([a-zA-Z0-9]+)(#[0-9]+)?', albumURL)
 if not match:
 	raise ImgurAlbumException("URL must be a valid Imgur Album")
 
@@ -55,7 +55,7 @@ if response.getcode() != 200:
 print "Album found!"
 
 html = response.read()
-images = re.findall('<img src="(http\:\/\/i\.imgur\.com\/([a-zA-Z0-9]+)\.jpg)"', html)
+images = re.findall('<img src="(http\:\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))"', html)
 
 print "Found %d images in album" % len(images)
 
@@ -71,7 +71,7 @@ if not os.path.exists(albumFolder):
 # And finally loop through and save the images:
 for image in images:
 	print "Fetching Image: " + image[0]
-	path = os.path.join(albumFolder, image[1] + ".jpg")
+	path = os.path.join(albumFolder, image[1])
 	urllib.urlretrieve(image[0], path)
 
 print ""
