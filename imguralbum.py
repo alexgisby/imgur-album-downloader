@@ -11,6 +11,7 @@ import sys
 import re
 import urllib
 import os
+import math
 
 help_message = '''
 Quickly and easily download an album from Imgur.
@@ -76,10 +77,13 @@ class ImgurAlbumDownloader:
             os.makedirs(albumFolder)
 
         # And finally loop through and save the images:
-        for image in self.images:
+        for (counter, image) in enumerate(self.images, start=1):
             if self.output_messages:
                 print "Fetching Image: " + image[0]
-            path = os.path.join(albumFolder, image[1])
+            prefix = "%0*d-" % (
+                int(math.ceil(math.log(len(self.images) + 1, 10))),
+                counter)
+            path = os.path.join(albumFolder, prefix + image[1])
             urllib.urlretrieve(image[0], path)
 
         if self.output_messages:
