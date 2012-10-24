@@ -63,6 +63,13 @@ class ImgurAlbumDownloader:
         """
         html = self.response.read()
         self.images = re.findall('<img src="(http\:\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))"', html)
+        
+        # Finding album name and setting it
+        title = re.findall('<title>(.*)</title>', html, re.DOTALL)
+        title = title[0]
+        title = re.findall('(.*) - Imgur', title)
+        title = title[0].strip()
+        self.title = title
 
         if self.output_messages:
             print "Found %d images in album" % len(self.images)
@@ -71,10 +78,11 @@ class ImgurAlbumDownloader:
         if foldername:
             albumFolder = foldername
         else:
-            albumFolder = self.album_key
+            albumFolder = self.title
 
         if not os.path.exists(albumFolder):
             os.makedirs(albumFolder)
+            print "Creating Album '%s'" % self.title
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.images, start=1):
