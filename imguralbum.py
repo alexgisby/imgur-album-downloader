@@ -43,14 +43,15 @@ class ImgurAlbumDownloader:
         self.output_messages = output_messages
 
         # Check the URL is actually imgur:
-        match = re.match('http\:\/\/(www\.)?imgur\.com/a/([a-zA-Z0-9]+)(#[0-9]+)?', album_url)
+        match = re.match('(https?)\:\/\/(www\.)?imgur\.com/a/([a-zA-Z0-9]+)(#[0-9]+)?', album_url)
         if not match:
             raise ImgurAlbumException("URL must be a valid Imgur Album")
 
-        self.album_key = match.group(2)
+        self.protocol = match.group(1)
+        self.album_key = match.group(3)
 
         # Read the no-script version of the page for all the images:
-        noscriptURL = 'http://imgur.com/a/' + match.group(2) + '/noscript'
+        noscriptURL = 'http://imgur.com/a/' + match.group(3) + '/noscript'
         self.response = urllib.urlopen(noscriptURL)
 
         if self.response.getcode() != 200:
@@ -78,7 +79,7 @@ class ImgurAlbumDownloader:
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.images, start=1):
-            image_url = "http:%s" % (image[0],)
+            image_url = "%s:%s" % (self.protocol, image[0])
             if self.output_messages:
                 print "Fetching Image: " + image_url
             prefix = "%0*d-" % (
