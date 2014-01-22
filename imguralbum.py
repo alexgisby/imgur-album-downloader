@@ -80,6 +80,10 @@ class ImgurAlbumDownloader:
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.images, start=1):
             image_url = "%s:%s" % (self.protocol, image[0])
+
+            # Fetch hi-res images (Fixes https://github.com/alexgisby/imgur-album-downloader/issues/5)
+            image_url = re.sub(r'([a-zA-Z0-9]+)(h)\.(jpg|jpeg|png|gif)$', r'\1.\3', image_url)
+
             if self.output_messages:
                 print "Fetching Image: " + image_url
             prefix = "%0*d-" % (
