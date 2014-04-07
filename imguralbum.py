@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
+
+
 """
 imguralbum.py - Download a whole imgur album in one go.
 
@@ -10,13 +12,15 @@ MIT License
 Copyright Alex Gisby <alex@solution10.com>
 """
 
+
 import sys
 import re
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 import math
 
-help_message = '''
+
+help_message = """
 Quickly and easily download an album from Imgur.
 
 Format:
@@ -25,10 +29,11 @@ Format:
 Example:
     $ python imguralbum.py http://imgur.com/a/uOOju#6 /Users/alex/images
 
-If you omit the dest folder name, the utility will create one with the same name as the
-album (for example for http://imgur.com/a/uOOju it'll create uOOju/ in the cwd)
+If you omit the dest folder name, the utility will create one with the same name
+as the album 
+(for example for http://imgur.com/a/uOOju it'll create uOOju/ in the cwd)
+"""
 
-'''
 
 class ImgurAlbumException(Exception):
     def __init__(self, msg=False):
@@ -47,7 +52,7 @@ class ImgurAlbumDownloader:
         self.complete_callbacks = []
 
         # Check the URL is actually imgur:
-        match = re.match('(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/a/([a-zA-Z0-9]+)(#[0-9]+)?', album_url)
+        match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/a/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
         if not match:
             raise ImgurAlbumException("URL must be a valid Imgur Album")
 
@@ -55,15 +60,15 @@ class ImgurAlbumDownloader:
         self.album_key = match.group(3)
 
         # Read the no-script version of the page for all the images:
-        noscriptURL = 'http://imgur.com/a/' + self.album_key + '/noscript'
-        self.response = urllib.urlopen(noscriptURL)
-
+        noscriptURL = "http://imgur.com/a/" + self.album_key + "/noscript"
+        self.response = urllib.request.urlopen(url=noscriptURL)
         if self.response.getcode() != 200:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % self.response.getcode())
 
         # Read in the images now so we can get stats and stuff:
-        html = self.response.read()
-        self.images = re.findall('<img src="(\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))"', html)
+        html = self.response.read().decode('utf-8')
+        self.images = re.findall('<img src="(\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))"', html)#,html
+
 
     def num_images(self):
         """
@@ -71,12 +76,14 @@ class ImgurAlbumDownloader:
         """
         return len(self.images)
 
+
     def album_key(self):
         """
         Returns the key of this album. Helpful if you plan on generating your own
         folder names.
         """
         return self.album_key
+
 
     def on_image_download(self, callback):
         """
@@ -86,6 +93,7 @@ class ImgurAlbumDownloader:
             my_awesome_callback(1, "http://i.imgur.com/fGWX0.jpg", "~/Downloads/1-fGWX0.jpg")
         """
         self.image_callbacks.append(callback)
+
 
     def on_complete(self, callback):
         """
@@ -115,7 +123,7 @@ class ImgurAlbumDownloader:
             image_url = "%s:%s" % (self.protocol, image[0])
 
             # Fetch hi-res images (Fixes https://github.com/alexgisby/imgur-album-downloader/issues/5)
-            image_url = re.sub(r'([a-zA-Z0-9]+)(h)\.(jpg|jpeg|png|gif)$', r'\1.\3', image_url)
+            image_url = re.sub(r"([a-zA-Z0-9]+)(h)\.(jpg|jpeg|png|gif)$", r"\1.\3", image_url)
 
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.images) + 1, 10))),
@@ -128,7 +136,7 @@ class ImgurAlbumDownloader:
                 fn(counter, image_url, path)
 
             # Actually download the thing
-            urllib.urlretrieve(image_url, path)
+            urllib.request.urlretrieve(image_url, path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
@@ -140,24 +148,24 @@ if __name__ == '__main__':
 
     if len(args) == 1:
         # Print out the help message and exit:
-        print help_message
+        print (help_message)
         exit()
 
     try:
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
-        print "Found %d images in album" % downloader.num_images()
+        print(("Found {0} images in album".format(downloader.num_images)))
 
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
-            print "Downloading Image %d" % index
-            print "    %s >> %s" % (url, dest)
+            print(("Downloading Image %d" % index))
+            print(("    %s >> %s" % (url, dest)))
         downloader.on_image_download(print_image_progress)
 
         # Called when the downloads are all done.
         def all_done():
-            print ""
-            print "Done!"
+            print ("")
+            print ("Done!")
         downloader.on_complete(all_done)
 
         # Work out if we have a foldername or not:
@@ -171,9 +179,9 @@ if __name__ == '__main__':
         exit()
 
     except ImgurAlbumException as e:
-        print "Error: " + e.msg
-        print ""
-        print "How to use"
-        print "============="
-        print help_message
+        print(("Error: " + e.msg))
+        print ("")
+        print ("How to use")
+        print ("=============")
+        print (help_message)
         exit(1)
