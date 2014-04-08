@@ -154,7 +154,7 @@ if __name__ == '__main__':
     try:
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
-        print(("Found {0} images in album".format(downloader.num_images)))
+        print(("Found {0} images in album".format(downloader.num_images())))
 
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):

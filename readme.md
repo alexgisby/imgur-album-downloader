@@ -5,7 +5,7 @@ allows you to download ann images at full resolution in an imgur album, all at o
 
 ## Requirements
 
-Python > 2.6
+Python >= 3.3
 
 ## Command Line Usage
 
@@ -56,4 +56,5 @@ With [Contributions](https://github.com/alexgisby/imgur-album-downloader/graphs/
 
 - [Lemuel Formacil](https://github.com/lemuelf)
 - [Vikraman Choudhury](https://github.com/vikraman)
-	
+- [Rapptz](https://github.com/Rapptz)
+- [polyx](https://github.com/polyx)	
