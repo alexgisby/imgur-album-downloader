@@ -5,7 +5,7 @@ allows you to download ann images at full resolution in an imgur album, all at o
 
 ## Requirements
 
-Python > 2.6
+Python > 3.4
 
 ## Command Line Usage
 
