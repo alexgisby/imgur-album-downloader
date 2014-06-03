@@ -136,7 +136,13 @@ class ImgurAlbumDownloader:
                 fn(counter, image_url, path)
 
             # Actually download the thing
-            urllib.request.urlretrieve(image_url, path)
+            if os.path.isfile(path):
+                print ("Skipping, already exists.")
+            else:
+                try:
+                    urllib.request.urlretrieve(image_url, path)
+                except:
+                    print ("Download failed.")
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
