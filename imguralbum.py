@@ -61,13 +61,20 @@ class ImgurAlbumDownloader:
 
         # Read the no-script version of the page for all the images:
         noscriptURL = "http://imgur.com/a/" + self.album_key + "/noscript"
-        self.response = urllib.request.urlopen(url=noscriptURL)
-        if self.response.getcode() != 200:
-            raise ImgurAlbumException("Error reading Imgur: Error Code %d" % self.response.getcode())
+
+        try:
+            self.response = urllib.request.urlopen(url=noscriptURL)
+            response_code = self.response.getcode()
+        except Exception as e:
+            self.response = False
+            response_code = e.code
+        
+        if not self.response or self.response.getcode() != 200:
+            raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.images = re.findall('<img src="(\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))"', html)#,html
+        self.images = re.findall('<img src="(\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))\?[0-9]+"', html)
 
 
     def num_images(self):
