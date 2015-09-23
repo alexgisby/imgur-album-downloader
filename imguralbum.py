@@ -60,10 +60,10 @@ class ImgurAlbumDownloader:
         self.album_key = match.group(4)
 
         # Read the no-script version of the page for all the images:
-        noscriptURL = "http://imgur.com/a/" + self.album_key + "/noscript"
+        fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
 
         try:
-            self.response = urllib.request.urlopen(url=noscriptURL)
+            self.response = urllib.request.urlopen(url=fullListURL)
             response_code = self.response.getcode()
         except Exception as e:
             self.response = False
@@ -74,14 +74,14 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.images = re.findall('<img src="(\/\/i\.imgur\.com\/([a-zA-Z0-9]+\.(jpg|jpeg|png|gif)))(\?[0-9]+)?"', html)
+        self.imageIDs = re.findall('<div id="([a-zA-Z0-9]+)" class="post-image-container', html)
 
 
     def num_images(self):
         """
         Returns the number of images that are present in this album.
         """
-        return len(self.images)
+        return len(self.imageIDs)
 
 
     def album_key(self):
@@ -126,17 +126,14 @@ class ImgurAlbumDownloader:
             os.makedirs(albumFolder)
 
         # And finally loop through and save the images:
-        for (counter, image) in enumerate(self.images, start=1):
-            image_url = "%s:%s" % (self.protocol, image[0])
-
-            # Fetch hi-res images (Fixes https://github.com/alexgisby/imgur-album-downloader/issues/5)
-            image_url = re.sub(r"([a-zA-Z0-9]+)(h)\.(jpg|jpeg|png|gif)$", r"\1.\3", image_url)
+        for (counter, image) in enumerate(self.imageIDs, start=1):
+            image_url = "http://i.imgur.com/"+image+"h.jpg"
 
             prefix = "%0*d-" % (
-                int(math.ceil(math.log(len(self.images) + 1, 10))),
+                int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
             )
-            path = os.path.join(albumFolder, prefix + image[1])
+            path = os.path.join(albumFolder, prefix + image + ".jpg")
 
             # Run the callbacks:
             for fn in self.image_callbacks:
