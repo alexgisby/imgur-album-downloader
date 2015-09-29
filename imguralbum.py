@@ -127,7 +127,7 @@ class ImgurAlbumDownloader:
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
-            image_url = "http://i.imgur.com/"+image+"h.jpg"
+            image_url = "http://i.imgur.com/"+image+".jpg"
 
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
