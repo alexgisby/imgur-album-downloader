@@ -74,7 +74,7 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('{"hash":"([a-zA-Z0-9]+)","title":"","description":"","width":[0-9]+,"height":[0-9]+,"size":[0-9]+,"ext":"(\.[a-zA-Z0-9]+)","animated":false|true,"prefer_video":false|true,"looping":false|true,"datetime":"[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]"}', html)
+        self.imageIDs = re.findall('{"hash":"([a-zA-Z0-9]+)","title":"[a-zA-Z0-9]*","description":"[a-zA-Z0-9]*","width":[0-9]+,"height":[0-9]+,"size":[0-9]+,"ext":"(\.[a-zA-Z0-9]+)","animated":false|true,"prefer_video":false|true,"looping":false|true,"datetime":"[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]"}', html)
 
 
     def num_images(self):
