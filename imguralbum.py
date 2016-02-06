@@ -30,7 +30,7 @@ Example:
     $ python imguralbum.py http://imgur.com/a/uOOju#6 /Users/alex/images
 
 If you omit the dest folder name, the utility will create one with the same name
-as the album 
+as the album
 (for example for http://imgur.com/a/uOOju it'll create uOOju/ in the cwd)
 """
 
@@ -68,7 +68,7 @@ class ImgurAlbumDownloader:
         except Exception as e:
             self.response = False
             response_code = e.code
-        
+
         if not self.response or self.response.getcode() != 200:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
@@ -95,7 +95,7 @@ class ImgurAlbumDownloader:
     def on_image_download(self, callback):
         """
         Allows you to bind a function that will be called just before an image is
-        about to be downloaded. You'll be given the 1-indexed position of the image, it's URL 
+        about to be downloaded. You'll be given the 1-indexed position of the image, it's URL
         and it's destination file in the callback like so:
             my_awesome_callback(1, "http://i.imgur.com/fGWX0.jpg", "~/Downloads/1-fGWX0.jpg")
         """
@@ -165,7 +165,7 @@ if __name__ == '__main__':
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
         print(("Found {0} images in album".format(downloader.num_images())))
-        
+
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
@@ -187,7 +187,7 @@ if __name__ == '__main__':
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
         exit()
-        
+
     except ImgurAlbumException as e:
         print(("Error: " + e.msg))
         print ("")
