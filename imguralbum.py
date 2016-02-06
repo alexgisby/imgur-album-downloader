@@ -74,7 +74,7 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('<div id="([a-zA-Z0-9]+)" class="post-image-container', html)
+        self.imageIDs = re.findall('{"hash":"([a-zA-Z0-9]+)","title":"","description":"","width":[0-9]+,"height":[0-9]+,"size":[0-9]+,"ext":"(\.[a-zA-Z0-9]+)","animated":false|true,"prefer_video":false|true,"looping":false|true,"datetime":"[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]"}', html)
 
 
     def num_images(self):
@@ -127,13 +127,13 @@ class ImgurAlbumDownloader:
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
-            image_url = "http://i.imgur.com/"+image+".jpg"
+            image_url = "http://i.imgur.com/"+image[0]+image[1]
 
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
             )
-            path = os.path.join(albumFolder, prefix + image + ".jpg")
+            path = os.path.join(albumFolder, prefix + image[0] + image[1])
 
             # Run the callbacks:
             for fn in self.image_callbacks:
@@ -165,7 +165,7 @@ if __name__ == '__main__':
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
         print(("Found {0} images in album".format(downloader.num_images())))
-
+        
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
@@ -187,7 +187,7 @@ if __name__ == '__main__':
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
         exit()
-
+        
     except ImgurAlbumException as e:
         print(("Error: " + e.msg))
         print ("")
