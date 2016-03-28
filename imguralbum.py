@@ -81,17 +81,20 @@ class ImgurAlbumDownloader:
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
 
+
     def num_images(self):
         """
         Returns the number of images that are present in this album.
         """
         return len(self.imageIDs)
-  
+
+
     def list_extensions(self):
         """
         Returns list with occurrences of extensions in descending order.
         """  
         return self.cnt.most_common()
+
 
     def album_key(self):
         """
@@ -199,7 +202,6 @@ if __name__ == '__main__':
 
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
-
         exit()
 
     except ImgurAlbumException as e:
