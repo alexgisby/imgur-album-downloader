@@ -18,6 +18,7 @@ import re
 import urllib.request, urllib.parse, urllib.error
 import os
 import math
+from collections import Counter
 
 
 help_message = """
@@ -74,15 +75,23 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('{"hash":"([a-zA-Z0-9]+)","title":"[a-zA-Z0-9]*","description":"[a-zA-Z0-9]*","width":[0-9]+,"height":[0-9]+,"size":[0-9]+,"ext":"(\.[a-zA-Z0-9]+)","animated":false|true,"prefer_video":false|true,"looping":false|true,"datetime":"[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]"}', html)
-
+        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
+        
+        self.cnt = Counter()
+        for i in self.imageIDs:
+            self.cnt[i[1]] += 1
 
     def num_images(self):
         """
         Returns the number of images that are present in this album.
         """
         return len(self.imageIDs)
-
+  
+    def list_extensions(self):
+        """
+        Returns list with occurrences of extensions in descending order.
+        """  
+        return self.cnt.most_common()
 
     def album_key(self):
         """
@@ -164,8 +173,12 @@ if __name__ == '__main__':
     try:
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
+
         print(("Found {0} images in album".format(downloader.num_images())))
 
+        for i in downloader.list_extensions():
+            print(("Found {0} files with {1} extension".format(i[1],i[0])))
+  
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
@@ -186,6 +199,7 @@ if __name__ == '__main__':
 
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
+
         exit()
 
     except ImgurAlbumException as e:
