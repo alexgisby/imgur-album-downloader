@@ -9,15 +9,15 @@ Python >= 3.3
 
 ## Command Line Usage
 
-	$ python imguralbum.py [album URL] [folder to save to]
+	$ python3 imguralbum.py [album URL] [folder to save to]
 
 Download all images from an album into the folder /Users/alex/images/downloaded
 
-	$ python imguralbum.py http://imgur.com/a/uOOju /Users/alex/images/downloaded
+	$ python3 imguralbum.py http://imgur.com/a/uOOju /Users/alex/images/downloaded
 	
 Downloads all images and puts them into an album in the current directory called "uOOju"
 
-	$ python imguralbum.py http://imgur.com/a/uOOju
+	$ python3 imguralbum.py http://imgur.com/a/uOOju
 
 
 ## Class Usage
