@@ -159,6 +159,7 @@ class ImgurAlbumDownloader:
                     urllib.request.urlretrieve(image_url, path)
                 except:
                     print ("Download failed.")
+                    os.remove(path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
