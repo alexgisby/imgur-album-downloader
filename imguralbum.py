@@ -18,6 +18,7 @@ import re
 import urllib.request, urllib.parse, urllib.error
 import os
 import math
+from collections import Counter
 
 
 help_message = """
@@ -30,7 +31,7 @@ Example:
     $ python imguralbum.py http://imgur.com/a/uOOju#6 /Users/alex/images
 
 If you omit the dest folder name, the utility will create one with the same name
-as the album 
+as the album
 (for example for http://imgur.com/a/uOOju it'll create uOOju/ in the cwd)
 """
 
@@ -68,13 +69,17 @@ class ImgurAlbumDownloader:
         except Exception as e:
             self.response = False
             response_code = e.code
-        
+
         if not self.response or self.response.getcode() != 200:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('<div id="([a-zA-Z0-9]+)" class="post-image-container', html)
+        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
+        
+        self.cnt = Counter()
+        for i in self.imageIDs:
+            self.cnt[i[1]] += 1
 
 
     def num_images(self):
@@ -82,6 +87,13 @@ class ImgurAlbumDownloader:
         Returns the number of images that are present in this album.
         """
         return len(self.imageIDs)
+
+
+    def list_extensions(self):
+        """
+        Returns list with occurrences of extensions in descending order.
+        """  
+        return self.cnt.most_common()
 
 
     def album_key(self):
@@ -95,7 +107,7 @@ class ImgurAlbumDownloader:
     def on_image_download(self, callback):
         """
         Allows you to bind a function that will be called just before an image is
-        about to be downloaded. You'll be given the 1-indexed position of the image, it's URL 
+        about to be downloaded. You'll be given the 1-indexed position of the image, it's URL
         and it's destination file in the callback like so:
             my_awesome_callback(1, "http://i.imgur.com/fGWX0.jpg", "~/Downloads/1-fGWX0.jpg")
         """
@@ -127,13 +139,13 @@ class ImgurAlbumDownloader:
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
-            image_url = "http://i.imgur.com/"+image+".jpg"
+            image_url = "http://i.imgur.com/"+image[0]+image[1]
 
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
             )
-            path = os.path.join(albumFolder, prefix + image + ".jpg")
+            path = os.path.join(albumFolder, prefix + image[0] + image[1])
 
             # Run the callbacks:
             for fn in self.image_callbacks:
@@ -147,6 +159,7 @@ class ImgurAlbumDownloader:
                     urllib.request.urlretrieve(image_url, path)
                 except:
                     print ("Download failed.")
+                    os.remove(path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
@@ -164,8 +177,12 @@ if __name__ == '__main__':
     try:
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
+
         print(("Found {0} images in album".format(downloader.num_images())))
 
+        for i in downloader.list_extensions():
+            print(("Found {0} files with {1} extension".format(i[1],i[0])))
+  
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
