@@ -50,11 +50,6 @@ MIT
 
 ## Credits
 
-Written by [Alex Gisby](https://github.com/alexgisby) ([@alexgisby](http://twitter.com/alexgisby))
+Originally written by [Alex Gisby](https://github.com/alexgisby) ([@alexgisby](http://twitter.com/alexgisby))
 
-With [Contributions](https://github.com/alexgisby/imgur-album-downloader/graphs/contributors) from:
-
-- [Lemuel Formacil](https://github.com/lemuelf)
-- [Vikraman Choudhury](https://github.com/vikraman)
-- [Rapptz](https://github.com/Rapptz)
-- [polyx](https://github.com/polyx)	
+With [Contributions from these amazing people!](https://github.com/alexgisby/imgur-album-downloader/graphs/contributors)
