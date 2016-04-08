@@ -19,6 +19,7 @@ import urllib.request, urllib.parse, urllib.error
 import os
 import math
 from collections import Counter
+from traceback import format_exc
 
 
 help_message = """
@@ -158,7 +159,7 @@ class ImgurAlbumDownloader:
                 try:
                     urllib.request.urlretrieve(image_url, path)
                 except:
-                    print ("Download failed.")
+                    print ("Download failed.\n"+format_exc())
                     os.remove(path)
 
         # Run the complete callbacks:
