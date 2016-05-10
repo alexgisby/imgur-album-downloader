@@ -20,6 +20,7 @@ import os
 import math
 from collections import Counter
 from traceback import format_exc
+import platform
 
 
 help_message = """
@@ -58,7 +59,6 @@ class ImgurAlbumDownloader:
         if not match:
             raise ImgurAlbumException("URL must be a valid Imgur Album")
 
-        self.protocol = match.group(1)
         self.album_key = match.group(4)
 
         # Read the no-script version of the page for all the images:
@@ -77,7 +77,8 @@ class ImgurAlbumDownloader:
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
         self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
-        
+        self.album_title = re.search('<meta property="og:title" content="(.*)"/>',html).group(1)
+
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
@@ -93,7 +94,7 @@ class ImgurAlbumDownloader:
     def list_extensions(self):
         """
         Returns list with occurrences of extensions in descending order.
-        """  
+        """
         return self.cnt.most_common()
 
 
@@ -104,6 +105,11 @@ class ImgurAlbumDownloader:
         """
         return self.album_key
 
+    def album_title(self):
+        """
+        Returns the title of this album.
+        """
+        return self.album_title
 
     def on_image_download(self, callback):
         """
@@ -133,7 +139,10 @@ class ImgurAlbumDownloader:
         if foldername:
             albumFolder = foldername
         else:
-            albumFolder = self.album_key
+            if platform.system() == "Windows":
+               albumFolder= self.album_title.translate({ord(i):' ' for i in "/\*?<>|"})
+            else:
+                albumFolder = self.album_title.translate({ord(i):' ' for i in "/"})
 
         if not os.path.exists(albumFolder):
             os.makedirs(albumFolder)
@@ -179,11 +188,11 @@ if __name__ == '__main__':
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
 
-        print(("Found {0} images in album".format(downloader.num_images())))
+        print(("Found {0} images in album called \"{1}\"".format(downloader.num_images(),downloader.album_title)))
 
         for i in downloader.list_extensions():
             print(("Found {0} files with {1} extension".format(i[1],i[0])))
-  
+
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
