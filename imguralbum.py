@@ -80,7 +80,7 @@ class ImgurAlbumDownloader:
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
         
-        self.album_title = re.search('<meta property="og:title" content="(.*)"/>',html).group(1)
+        self.album_title = re.search('image\s*:\s*{"id":"%s","title":"(.*?)"' % self.album_key ,html).group(1)
         
         html = html.splitlines()
         for line in html:
