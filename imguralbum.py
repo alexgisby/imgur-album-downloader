@@ -19,8 +19,6 @@ import urllib.request, urllib.parse, urllib.error
 import os
 import math
 from collections import Counter
-from traceback import format_exc
-import platform
 
 
 help_message = """
@@ -55,13 +53,19 @@ class ImgurAlbumDownloader:
         self.complete_callbacks = []
 
         # Check the URL is actually imgur:
-        match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery)/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
+        match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery|topic)/([a-zA-Z0-9]+)/?(#[0-9]+|[a-zA-Z0-9]+)?", album_url)
         if not match:
             raise ImgurAlbumException("URL must be a valid Imgur Album")
 
-        self.album_key = match.group(4)
+        self.protocol = match.group(1)
 
-        # Read the no-script version of the page for all the images:
+        if match.group(3) == "topic":
+            self.album_key = match.group(5)
+        else:
+            self.album_key = match.group(4)
+
+
+        # Read full page album, gallery or topic to get all the images:
         fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
 
         try:
@@ -76,9 +80,14 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
-        self.album_title = re.search('<meta property="og:title" content="(.*)"/>',html).group(1)
+        html = html.splitlines()
+        for line in html:
+            line=line.lstrip()
+            if line.startswith('_item:') or line.startswith('images'):
+                self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', line)
+                break
 
+        # Count different extensions in album:
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
@@ -105,11 +114,6 @@ class ImgurAlbumDownloader:
         """
         return self.album_key
 
-    def album_title(self):
-        """
-        Returns the title of this album.
-        """
-        return self.album_title
 
     def on_image_download(self, callback):
         """
@@ -139,10 +143,7 @@ class ImgurAlbumDownloader:
         if foldername:
             albumFolder = foldername
         else:
-            if platform.system() == "Windows":
-               albumFolder= self.album_title.translate({ord(i):' ' for i in "/\*?<>|"})
-            else:
-                albumFolder = self.album_title.translate({ord(i):' ' for i in "/"})
+            albumFolder = self.album_key
 
         if not os.path.exists(albumFolder):
             os.makedirs(albumFolder)
@@ -163,12 +164,12 @@ class ImgurAlbumDownloader:
 
             # Actually download the thing
             if os.path.isfile(path):
-                print ("Skipping, already exists.")
+                print ("Skipping, already exists.\n")
             else:
                 try:
                     urllib.request.urlretrieve(image_url, path)
                 except:
-                    print ("Download failed.\n"+format_exc())
+                    print ("Download failed.")
                     os.remove(path)
 
         # Run the complete callbacks:
@@ -188,10 +189,11 @@ if __name__ == '__main__':
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
 
-        print(("Found {0} images in album called \"{1}\"".format(downloader.num_images(),downloader.album_title)))
+        print(("\nFound {0} images in album\n".format(downloader.num_images())))
 
         for i in downloader.list_extensions():
             print(("Found {0} files with {1} extension".format(i[1],i[0])))
+        print()
 
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
