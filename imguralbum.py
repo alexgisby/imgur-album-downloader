@@ -82,6 +82,9 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
+        
+        self.album_title = re.search('<meta property="og:title" content="(.*)"/>',html).group(1)
+        
         html = html.splitlines()
         for line in html:
             line=line.lstrip()
@@ -89,7 +92,6 @@ class ImgurAlbumDownloader:
                 self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', line)
                 break
 
-        self.album_title = re.search('<meta property="og:title" content="(.*)"/>',html).group(1)
 
         self.cnt = Counter()
         for i in self.imageIDs:
