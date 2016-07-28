@@ -79,16 +79,15 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        
-        self.album_title = re.search('image\s*:\s*{"id":"%s","title":"(.*?)"' % self.album_key ,html).group(1)
-        
+
+        self.album_title = re.search('image\s*:\s*{"id":"%s".*?"title":"(.*?)"' % self.album_key.strip() ,html).group(1)
+
         html = html.splitlines()
         for line in html:
             line=line.lstrip()
             if line.startswith('_item:') or line.startswith('images'):
                 self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', line)
                 break
-
 
         self.cnt = Counter()
         for i in self.imageIDs:
@@ -226,7 +225,7 @@ if __name__ == '__main__':
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
         exit()
-
+        
     except ImgurAlbumException as e:
         print(("Error: " + e.msg))
         print ("")
