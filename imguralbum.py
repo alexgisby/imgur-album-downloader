@@ -228,7 +228,7 @@ if __name__ == '__main__':
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
         exit()
-        
+
     except ImgurAlbumException as e:
         print(("Error: " + e.msg))
         print ("")
