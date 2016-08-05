@@ -80,7 +80,7 @@ class ImgurAlbumDownloader:
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
 
-        self.album_title = re.search('image\s*:\s*{"id":"%s".*?"title":"(.*?)"' % self.album_key.strip() ,html).group(1)
+        self.album_title = re.search('images?\s*:\s*{"id":"%s".*?"title":"(.*?)"' % self.album_key.strip() ,html).group(1)
 
         html = html.splitlines()
         for line in html:
@@ -148,6 +148,9 @@ class ImgurAlbumDownloader:
         # Try and create the album folder:
         if foldername:
             albumFolder = foldername
+        elif self.album_title is None or self.album_title is "":
+            print("Album has no name, it will be named after ID contained in album URL.\n")
+            albumFolder = self.album_title = self.album_key
         else:
             if platform.system() == "Windows":
                albumFolder= self.album_title.translate({ord(i):' ' for i in "/\*?<>|"})
