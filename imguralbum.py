@@ -10,6 +10,14 @@ to download Imgur albums.
 
 MIT License
 Copyright Alex Gisby <alex@solution10.com>
+
+Branch Created Aug. 2016 by jtara1:
+Features added:
+    - supports imgur images that aren't "gallery" or "a" or "album" e.g.:
+        http://imgur.com/SnkkAVU
+        http://i.imgur.com/SnkkAVU.png
+    - uses album/gallery/image title as folder title that's created and contains image(s) with key appended e.g.:        
+        We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
 """
 
 
@@ -19,7 +27,6 @@ import urllib.request, urllib.parse, urllib.error
 import os
 import math
 from collections import Counter
-
 
 help_message = """
 Quickly and easily download an album from Imgur.
@@ -36,6 +43,7 @@ as the album
 """
 
 
+
 class ImgurAlbumException(Exception):
     def __init__(self, msg=False):
         self.msg = msg
@@ -45,7 +53,13 @@ class ImgurAlbumDownloader:
     def __init__(self, album_url):
         """
         Constructor. Pass in the album_url that you want to download.
+        TODO:
+            1. Regex used to get self.album_title (OS may not save acceptable characters in html in file names)
+            2. Error? Getting HTTP 404 error with images that can be accessed via browser normally (e.g.: http://imgur.com/gallery/40Uow1Q )
+            3. Get individual image titles if provided (note: this is located in _item: {...}; section of html alongside image keys/hashes and extensions)
+            4. Support downloading of a imgur user's entire album collection
         """
+        
         self.album_url = album_url
 
         # Callback members:
@@ -53,15 +67,35 @@ class ImgurAlbumDownloader:
         self.complete_callbacks = []
 
         # Check the URL is actually imgur:
-        match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery)/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
+        match = re.match("(https?)\:\/\/(www\.)?(i\.|m\.)?imgur\.com(/a|/gallery|/)/?([a-zA-Z0-9]+)(#[0-9]+)?(.\w*)?", album_url)
         if not match:
             raise ImgurAlbumException("URL must be a valid Imgur Album")
 
         self.protocol = match.group(1)
-        self.album_key = match.group(4)
+        self.direct_or_mobile = match.group(3) # could use a better var name
+        self.imgur_link_type = match.group(4)        
+        if self.imgur_link_type == "/":
+            self.is_album = False
+        else:
+            self.is_album = True
+        self.album_key = match.group(5) # despite var name, this can refer to image key depending on album_url passed
+        self.image_extension = match.group(7)
 
-        # Read the no-script version of the page for all the images:
-        fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
+        print ("album key: " + self.album_key) # debug        
+        print ("is_album: " + str(self.is_album)) # debug    
+
+        # default album_title (used later as folder name containing image(s)
+        self.album_title = self.album_key        
+        
+        if self.direct_or_mobile and self.image_extension:
+            self.imageIDs = [(self.album_key, self.image_extension)]
+            return
+
+        if self.is_album:
+            # Read the no-script version of the page for all the images:
+            fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
+        elif not self.is_album:
+            fullListURL = album_url
 
         try:
             self.response = urllib.request.urlopen(url=fullListURL)
@@ -75,8 +109,24 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
         
+        # search for album / image title
+        search = re.search("<title>\s*(.*) - (?:Album on )*?Imgur", html)
+        if search:
+            self.album_title = search.group(1) + ' (' + self.album_key + ')'            
+        
+        print ('album_title: ' + self.album_title) # debug          
+            
+        # get section from html that contains image ID(s) and file extensions of each ID
+        search = re.search('(_item:.*?};)', html, flags=re.DOTALL)                 
+        if search:
+            self.imageIDs = re.findall('.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', search.group(1))
+            if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.album_key:
+                self.imageIDs.remove(self.imageIDs[0]) # removes the first element in imageIDs since this'll could be the album_key if this link has more than 1 img
+
+        print ("imageIDs count: " + str(len(self.imageIDs))) # debug
+        print ("imageIDs:\n" + str(self.imageIDs)) # debug
+                        
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
@@ -132,13 +182,14 @@ class ImgurAlbumDownloader:
         if foldername:
             albumFolder = foldername
         else:
-            albumFolder = self.album_key
+            albumFolder = self.album_title
 
         if not os.path.exists(albumFolder):
             os.makedirs(albumFolder)
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
+#            print ("Downloading image: " + str(image))
             image_url = "http://i.imgur.com/"+image[0]+image[1]
 
             prefix = "%0*d-" % (
@@ -150,20 +201,22 @@ class ImgurAlbumDownloader:
             # Run the callbacks:
             for fn in self.image_callbacks:
                 fn(counter, image_url, path)
-
-            # Actually download the thing
-            if os.path.isfile(path):
-                print ("Skipping, already exists.")
-            else:
-                try:
-                    urllib.request.urlretrieve(image_url, path)
-                except:
-                    print ("Download failed.")
-                    os.remove(path)
+                
+            self.direct_download(image_url, path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
             fn()
+            
+    def direct_download(self, image_url, path):
+        if os.path.isfile(path):
+            print ("Skipping, already exists.")
+        else:
+            try:
+                urllib.request.urlretrieve(image_url, path)
+            except:
+                print ("Download failed.")
+                os.remove(path)
 
 
 if __name__ == '__main__':
