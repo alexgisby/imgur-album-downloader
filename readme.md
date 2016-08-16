@@ -3,6 +3,19 @@
 This is a simple Python script that contains a class and command line interface that
 allows you to download ann images at full resolution in an imgur album, all at once.
 
+## jtara1 Fork - Features
+Features added:
+
+* supports imgur images that aren't "gallery" or "a" or "album" e.g.:
+
+>http://imgur.com/SnkkAVU
+
+>http://i.imgur.com/SnkkAVU.png
+
+* uses album/gallery/image title as folder title that's created and contains image(s) with key appended e.g.:
+
+>We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
+
 ## Requirements
 
 Python >= 3.3

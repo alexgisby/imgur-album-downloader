@@ -11,13 +11,7 @@ to download Imgur albums.
 MIT License
 Copyright Alex Gisby <alex@solution10.com>
 
-Fork Created Aug. 2016 by jtara1:
-Features added:
-    - supports imgur images that aren't "gallery" or "a" or "album" e.g.:
-        http://imgur.com/SnkkAVU
-        http://i.imgur.com/SnkkAVU.png
-    - uses album/gallery/image title as folder title that's created and contains image(s) with key appended e.g.:        
-        We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
+Fork Created Aug. 2016 by jtara1
 """
 
 
