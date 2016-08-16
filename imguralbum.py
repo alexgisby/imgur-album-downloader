@@ -11,7 +11,7 @@ to download Imgur albums.
 MIT License
 Copyright Alex Gisby <alex@solution10.com>
 
-Branch Created Aug. 2016 by jtara1:
+Fork Created Aug. 2016 by jtara1:
 Features added:
     - supports imgur images that aren't "gallery" or "a" or "album" e.g.:
         http://imgur.com/SnkkAVU
@@ -189,7 +189,6 @@ class ImgurAlbumDownloader:
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
-#            print ("Downloading image: " + str(image))
             image_url = "http://i.imgur.com/"+image[0]+image[1]
 
             prefix = "%0*d-" % (
