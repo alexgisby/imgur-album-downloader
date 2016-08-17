@@ -44,14 +44,14 @@ class ImgurAlbumException(Exception):
 
 
 class ImgurAlbumDownloader:
-    def __init__(self, album_url, dir_download = os.getcwd()):
+    def __init__(self, album_url, dir_download = os.getcwd(), debug=False):
         """
         Constructor. Pass in the album_url that you want to download.
         TODO:
             1. Regex used to get self.album_title (OS may not save acceptable characters in html in file names)
             2. Error? Getting HTTP 404 error with images that can be accessed via browser normally (e.g.: http://imgur.com/gallery/40Uow1Q )
             3. Get individual image titles if provided (note: this is located in _item: {...}; section of html alongside image keys/hashes and extensions)
-            4. Support downloading of a imgur user's entire album collection
+            4. Support downloading of an imgur user's entire album collection
         """
         
         self.album_url = album_url
@@ -76,8 +76,9 @@ class ImgurAlbumDownloader:
         self.album_key = match.group(5) # despite var name, this can refer to image key depending on album_url passed
         self.image_extension = match.group(7)
 
-        print ("album key: " + self.album_key) # debug        
-        print ("is_album: " + str(self.is_album)) # debug    
+        if debug:
+            print ("album key: " + self.album_key) # debug        
+            print ("is_album: " + str(self.is_album)) # debug    
 
         # default album_title (used later as folder name containing image(s)
         self.album_title = self.album_key        
@@ -110,7 +111,8 @@ class ImgurAlbumDownloader:
         if search:
             self.album_title = search.group(1) + ' (' + self.album_key + ')'            
         
-        print ('album_title: ' + self.album_title) # debug          
+        if debug:
+            print ('album_title: ' + self.album_title) # debug          
             
         # get section from html that contains image ID(s) and file extensions of each ID
         search = re.search('(_item:.*?};)', html, flags=re.DOTALL)                 
@@ -119,8 +121,9 @@ class ImgurAlbumDownloader:
             if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.album_key:
                 self.imageIDs.remove(self.imageIDs[0]) # removes the first element in imageIDs since this'll could be the album_key if this link has more than 1 img
 
-        print ("imageIDs count: " + str(len(self.imageIDs))) # debug
-        print ("imageIDs:\n" + str(self.imageIDs)) # debug
+        if debug:
+            print ("imageIDs count: " + str(len(self.imageIDs))) # debug
+            print ("imageIDs:\n" + str(self.imageIDs)) # debug
                         
         self.cnt = Counter()
         for i in self.imageIDs:

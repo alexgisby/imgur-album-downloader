@@ -16,9 +16,13 @@ Features added:
 
 >We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
 
-* __init__ function of ImgurAlbumDownloader now takes an 2nd (optional) parameter, dir_download which allows for specific directory to download to (not adapted for cli), e.g.:
+* \_\_init\__ function of ImgurAlbumDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
 
 >downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/')
+
+* \_\_init\_\_ function of ImgurAlbumDownloaders takes a 3rd (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
+
+>downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', True)
 
 ## Requirements
 
