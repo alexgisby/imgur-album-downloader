@@ -44,7 +44,7 @@ class ImgurAlbumException(Exception):
 
 
 class ImgurAlbumDownloader:
-    def __init__(self, album_url):
+    def __init__(self, album_url, dir_download = os.getcwd()):
         """
         Constructor. Pass in the album_url that you want to download.
         TODO:
@@ -55,6 +55,7 @@ class ImgurAlbumDownloader:
         """
         
         self.album_url = album_url
+        self.dir_download = dir_download # directory to save image(s)
 
         # Callback members:
         self.image_callbacks = []
@@ -178,8 +179,10 @@ class ImgurAlbumDownloader:
         else:
             albumFolder = self.album_title
 
-        if not os.path.exists(albumFolder):
-            os.makedirs(albumFolder)
+        dir_save = os.path.join(self.dir_download, albumFolder)
+
+        if not os.path.exists(dir_save):
+            os.makedirs(dir_save)
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
@@ -189,7 +192,7 @@ class ImgurAlbumDownloader:
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
             )
-            path = os.path.join(albumFolder, prefix + image[0] + image[1])
+            path = os.path.join(dir_save, prefix + image[0] + image[1])
 
             # Run the callbacks:
             for fn in self.image_callbacks:
