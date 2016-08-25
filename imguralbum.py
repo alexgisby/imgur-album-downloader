@@ -181,7 +181,9 @@ class ImgurAlbumDownloader:
             albumFolder = foldername
         else:
             albumFolder = self.album_title
-
+        
+        if len(self.imageIDs) == 1:
+            albumFolder = ''
         dir_save = os.path.join(self.dir_download, albumFolder)
 
         if not os.path.exists(dir_save):
@@ -195,7 +197,11 @@ class ImgurAlbumDownloader:
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
             )
-            path = os.path.join(dir_save, prefix + image[0] + image[1])
+            
+            filename = prefix + image[0] + image[1]
+            if len(self.imageIDs) == 1:
+                filename = self.album_title + image[1]
+            path = os.path.join(dir_save, filename)
 
             # Run the callbacks:
             for fn in self.image_callbacks:
