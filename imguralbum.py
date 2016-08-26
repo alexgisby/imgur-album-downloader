@@ -44,9 +44,15 @@ class ImgurAlbumException(Exception):
 
 
 class ImgurAlbumDownloader:
-    def __init__(self, album_url, dir_download = os.getcwd(), debug=False):
+    def __init__(self, album_url, dir_download=os.getcwd(), file_name='', debug=False):
         """
         Constructor. Pass in the album_url that you want to download.
+        ARGUMENTS:
+            album_url   : url of imgur gallery, album, single img, or direct url of image
+            dir_download: core directory for location to save_images(...), (path passed in save_images(...) out prioritizes this one)
+            file_name   : name of folder containing images from album or name of single image (depending on album_url)
+                          actual album/img name found on webpage out prioritizes file_name
+            debug       : if True, prints several variables throughout __init__(...)
         TODO:
             1. Regex used to get self.album_title (OS may not save acceptable characters in html in file names)
             2. Error? Getting HTTP 404 error with images that can be accessed via browser normally (e.g.: http://imgur.com/gallery/40Uow1Q )
@@ -81,7 +87,10 @@ class ImgurAlbumDownloader:
             print ("is_album: " + str(self.is_album)) # debug    
 
         # default album_title (used later as folder name containing image(s)
-        self.album_title = self.album_key        
+        if file_name == '':        
+            self.album_title = self.album_key        
+        else:
+            self.album_title = file_name
         
         if self.direct_or_mobile and self.image_extension:
             self.imageIDs = [(self.album_key, self.image_extension)]

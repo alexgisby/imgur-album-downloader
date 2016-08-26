@@ -17,7 +17,7 @@ def main():
     
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
 #    print (dir1)
-    downloader = imguralbum.ImgurAlbumDownloader(url5, dir1)
+    downloader = imguralbum.ImgurAlbumDownloader(url1, dir1, 'myimg')
     downloader.save_images()
 #    
 if __name__ == '__main__':
