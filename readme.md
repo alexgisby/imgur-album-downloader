@@ -16,13 +16,17 @@ Features added:
 
 >We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
 
-* \_\_init\__ function of ImgurAlbumDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
+* \_\_init\_\_ function of ImgurAlbumDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
 
 >downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/')
 
-* \_\_init\_\_ function of ImgurAlbumDownloaders takes a 3rd (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
+* \_\_init\_\_ function of ImgurAlbumDownloader takes a 3rd (optional) parameter, file_name='', which allows user to specify name of file or folder that's being downloaded from imgur url (will be name of folder if album else will be file name if downloading single img). Note this takes priority over the imgur key and the album title search.
 
->downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', True)
+>downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img')
+
+* \_\_init\_\_ function of ImgurAlbumDownloaders takes a 4th (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
+
+>downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True)
 
 ## Requirements
 
