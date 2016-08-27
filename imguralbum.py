@@ -51,7 +51,7 @@ class ImgurAlbumDownloader:
             album_url   : url of imgur gallery, album, single img, or direct url of image
             dir_download: core directory for location to save_images(...), (path passed in save_images(...) out prioritizes this one)
             file_name   : name of folder containing images from album or name of single image (depending on album_url)
-                          actual album/img name found on webpage out prioritizes file_name
+                          if file_name given, it prioritizes over webpage title and imgur key
             debug       : if True, prints several variables throughout __init__(...)
         TODO:
             1. Regex used to get self.album_title (OS may not save acceptable characters in html in file names)
@@ -84,15 +84,10 @@ class ImgurAlbumDownloader:
 
         if debug:
             print ("album key: " + self.album_key) # debug        
-            print ("is_album: " + str(self.is_album)) # debug    
-
-        # default album_title (used later as folder name containing image(s)
-        if file_name == '':        
-            self.album_title = self.album_key        
-        else:
-            self.album_title = file_name
+            print ("is_album: " + str(self.is_album)) # debug        
         
         if self.direct_or_mobile and self.image_extension:
+            self.album_title = self.album_key if file_name == '' else file_name
             self.imageIDs = [(self.album_key, self.image_extension)]
             return
 
@@ -113,15 +108,20 @@ class ImgurAlbumDownloader:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
-        html = self.response.read().decode('utf-8')
+        html = self.response.read().decode('utf-8')   
         
-        # search for album / image title
-        search = re.search("<title>\s*(.*) - (?:Album on )*?Imgur", html)
-        if search:
-            self.album_title = search.group(1) + ' (' + self.album_key + ')'            
-        
+        # default album_title
+        self.album_title = self.album_key 
+        if file_name == '':        
+            # search for album / image title of webpage
+            search = re.search("<title>\s*(.*) - (?:Album on )*?Imgur", html)
+            if search:
+                self.album_title = search.group(1) + ' (' + self.album_key + ')'   
+        elif file_name != '':
+            self.album_title = file_name
+                    
         if debug:
-            print ('album_title: ' + self.album_title) # debug          
+            print ('album_title: ' + self.album_title) # debug   
             
         # get section from html that contains image ID(s) and file extensions of each ID
         search = re.search('(_item:.*?};)', html, flags=re.DOTALL)                 
@@ -186,13 +186,13 @@ class ImgurAlbumDownloader:
         And if the folder doesn't exist, it'll try and create it.
         """
         # Try and create the album folder:
-        if foldername:
-            albumFolder = foldername
-        else:
-            albumFolder = self.album_title
+        albumFolder = ''
+        if len(self.imageIDs) > 1:
+            if foldername:
+                albumFolder = foldername
+            else:
+                albumFolder = self.album_title
         
-        if len(self.imageIDs) == 1:
-            albumFolder = ''
         dir_save = os.path.join(self.dir_download, albumFolder)
 
         if not os.path.exists(dir_save):
