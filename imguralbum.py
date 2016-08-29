@@ -38,12 +38,12 @@ as the album
 
 
 
-class ImgurAlbumException(Exception):
+class ImgurException(Exception):
     def __init__(self, msg=False):
         self.msg = msg
 
 
-class ImgurAlbumDownloader:
+class ImgurDownloader:
     def __init__(self, album_url, dir_download=os.getcwd(), file_name='', debug=False):
         """
         Constructor. Pass in the album_url that you want to download.
@@ -70,7 +70,7 @@ class ImgurAlbumDownloader:
         # Check the URL is actually imgur:
         match = re.match("(https?)\:\/\/(www\.)?(i\.|m\.)?imgur\.com(/a|/gallery|/)/?([a-zA-Z0-9]+)(#[0-9]+)?(.\w*)?", album_url)
         if not match:
-            raise ImgurAlbumException("URL must be a valid Imgur Album")
+            raise ImgurException("URL must be a valid Imgur Album")
 
         self.protocol = match.group(1)
         self.direct_or_mobile = match.group(3) # could use a better var name
@@ -105,7 +105,7 @@ class ImgurAlbumDownloader:
             response_code = e.code
 
         if not self.response or self.response.getcode() != 200:
-            raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
+            raise ImgurException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')   
@@ -187,7 +187,7 @@ class ImgurAlbumDownloader:
         """
         # open imgur dne image to compare to downloaded image later
         dne_path = os.path.join(os.getcwd(), 'imgur-dne')
-        dne_file = open(dne_path, 'rb')
+        self.dne_file = open(dne_path, 'rb')
         
         # Try and create the album folder:
         albumFolder = ''
@@ -214,37 +214,45 @@ class ImgurAlbumDownloader:
             filename = prefix + image[0] + image[1]
             if len(self.imageIDs) == 1:
                 filename = self.album_title + image[1]
-            path = os.path.join(dir_save, filename)
+            self.path = os.path.join(dir_save, filename)
 
             # Run the callbacks:
             for fn in self.image_callbacks:
-                fn(counter, image_url, path)
+                fn(counter, image_url, self.path)
                 
-            self.direct_download(image_url, path)
-            
-            with open(path, 'rb') as f:
-                if self.areFilesEqual(f, dne_file):
-                    print ('DNE: ', filename)
-                    print ('Deleting DNE image.')
-                    os.remove(path)
+            self.direct_download(image_url, self.path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
             fn()
             
-        dne_file.close()
+        self.dne_file.close()
             
-    def direct_download(self, image_url, path):
+    def direct_download(self, image_url, path, dne_file=None):
+        """ download data from url and save to path
+            & optionally check if img downloaded is imgur dne file 
+        """
         if os.path.isfile(path):
             print ("Skipping, already exists.")
         else:
             try:
-                urllib.request.urlretrieve(image_url, path)
+                urllib.request.urlretrieve(image_url, path, self.urlretrieve_hook)
             except:
                 print ("Download failed.")
                 os.remove(path)
+
+    def urlretrieve_hook(self, trans_count, block_size, total_size):
+        """ hook for urllib.request.urlretrieve(...) function, upon download complete, check if image dne """
+        if trans_count == (math.ceil(total_size / block_size)):
+            # check if image is dne image and remove if it is
+            filename = self.remove_extension(self.path)
+            with open(self.path, 'rb') as file:
+                if self.are_files_equal(file, self.dne_file):
+                    print ('DNE: ', filename)
+                    print ('Deleting DNE image.')
+                    os.remove(self.path)
                 
-    def isImgurDneImage(self, img_path):
+    def is_imgur_dne_image(self, img_path):
         """ takes full image path & checks if bytes are equal to that of imgur does not exist image """
         dne_img = os.path.join(os.getcwd(), 'imgur-dne') # edit location if needed
         with open(dne_img, 'rb') as f:
@@ -256,12 +264,36 @@ class ImgurAlbumDownloader:
             else:
                 return False
                 
-    def areFilesEqual(self, file1, file2):
+    def are_files_equal(self, file1, file2):
         """ given two file objects, checks to see if their bytes are equal """
         if bytearray(file1.read()) == bytearray(file2.read()):
             return True
         else:
             return False
+            
+    def remove_extension(self, path):
+        """ Returns filename found in url or path by locating image file extension """
+        
+        exts = ['.png', '.jpg', 'webm', '.jpeg', '.jfif', '.gif', 'gifv', '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat', 
+            '.heif', '.exif', '.ppm', '.cgm', '.svg']
+         
+        for e in exts:
+            ext_index = path.find(e)
+            if ext_index != -1:
+                break
+        if ext_index == -1: # no ext found in path
+            return ''
+            
+        filename = []
+        # iterate backwards from where ext begins to the beginning of the path
+        for char_index in range(ext_index - 1, -1, -1): 
+            char = path[char_index]
+            if char == '/':
+                break
+            filename.append(char)
+            
+        filename.reverse()
+        return ''.join(filename) 
 
 
 if __name__ == '__main__':
@@ -274,7 +306,7 @@ if __name__ == '__main__':
 
     try:
         # Fire up the class:
-        downloader = ImgurAlbumDownloader(args[1])
+        downloader = ImgurDownloader(args[1])
 
         print(("Found {0} images in album".format(downloader.num_images())))
 
@@ -303,7 +335,7 @@ if __name__ == '__main__':
         downloader.save_images(albumFolder)
         exit()
 
-    except ImgurAlbumException as e:
+    except ImgurException as e:
         print(("Error: " + e.msg))
         print ("")
         print ("How to use")

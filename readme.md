@@ -16,19 +16,23 @@ Features added:
 
 >We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
 
-* \_\_init\_\_ function of ImgurAlbumDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
+* \_\_init\_\_ function of ImgurDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
 
->downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/')
+>downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/')
 
-* \_\_init\_\_ function of ImgurAlbumDownloader takes a 3rd (optional) parameter, file_name='', which allows user to specify name of file or folder that's being downloaded from imgur url (will be name of folder if album else will be file name if downloading single img). Note this takes priority over the imgur key and the album title search.
+* \_\_init\_\_ function of ImgurDownloader takes a 3rd (optional) parameter, file_name='', which allows user to specify name of file or folder that's being downloaded from imgur url (will be name of folder if album else will be file name if downloading single img). Note this takes priority over the imgur key and the album webpage title.
 
->downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img')
+>downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img')
 
-* \_\_init\_\_ function of ImgurAlbumDownloaders takes a 4th (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
+* \_\_init\_\_ function of ImgurDownloaders takes a 4th (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
 
->downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True)
+>downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True)
 
-* added function isImgurDneImage(self, img_path) which returns True if img_path is the same image as the Imgur does not exist image false otherwise
+* new feature that deletes imgur does not exist image if it is downloaded implemented by comparing the bytes in hook function of urlretrieve function of self.direct_download(...)
+
+    * added function is\_imgur\_dne\_image(self, img\_path) which returns True if the image from img\_path is the same image as the Imgur does not exist image false otherwise
+
+    * added function are\_files\_equal(self, file1, file2) which compares the bytes and returns True if the bytes are equal, False otherwise
 
 ## Requirements
 
@@ -53,7 +57,7 @@ The class allows you to download imgur albums in your own Python programs withou
 through the command line. Here's an example of it's usage:
 
 ### Example:
-	downloader = ImgurAlbumDownloader("http://imgur.com/a/uOOju")
+	downloader = ImgurDownloader("http://imgur.com/a/uOOju")
 	print "This albums has %d images" % downloader.num_images()
 	downloader.save_images()
 

@@ -20,18 +20,19 @@ def test():
     
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
 #    print (dir1)
-#    imguralbum.ImgurAlbumDownloader(url1, dir1, file_name='url1', debug=True).save_images()
+#    imguralbum.ImgurDownloader(url1, dir1, file_name='url1', debug=True).save_images()
 #    print()
-#    imguralbum.ImgurAlbumDownloader(url2, dir1, file_name='url2', debug=True).save_images()
+#    imguralbum.ImgurDownloader(url2, dir1, file_name='url2', debug=True).save_images()
 #    print()
-#    imguralbum.ImgurAlbumDownloader(url3, dir1, file_name='url3', debug=True).save_images()
+#    imguralbum.ImgurDownloader(url3, dir1, file_name='url3', debug=True).save_images()
 #    print()
-#    imguralbum.ImgurAlbumDownloader(url4, dir1, file_name='url4', debug=True).save_images()
+#    imguralbum.ImgurDownloader(url4, dir1, file_name='url4', debug=True).save_images()
 #    print()
-#    imguralbum.ImgurAlbumDownloader(url5, dir1, file_name='url5', debug=True).save_images()
+#    imguralbum.ImgurDownloader(url5, dir1, file_name='url5', debug=True).save_images()
 #    print()
-    imguralbum.ImgurAlbumDownloader(url6, dir1, file_name='url6', debug=True).save_images()
+    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
+    print()
+
     
-#    
 if __name__ == '__main__':
     test()
