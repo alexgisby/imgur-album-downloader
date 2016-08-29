@@ -28,6 +28,8 @@ Features added:
 
 >downloader = ImgurAlbumDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True)
 
+* added function isImgurDneImage(self, img_path) which returns True if img_path is the same image as the Imgur does not exist image false otherwise
+
 ## Requirements
 
 Python >= 3.3

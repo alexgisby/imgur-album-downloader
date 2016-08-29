@@ -217,6 +217,12 @@ class ImgurAlbumDownloader:
                 fn(counter, image_url, path)
                 
             self.direct_download(image_url, path)
+            
+            # delete img if imgur does not exist img was downloaded
+            if self.isImgurDneImage(path):
+                print ('DNE: ', filename)
+                print ('Deleting DNE image.')
+                os.remove(path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
@@ -231,6 +237,18 @@ class ImgurAlbumDownloader:
             except:
                 print ("Download failed.")
                 os.remove(path)
+                
+    def isImgurDneImage(self, img_path):
+        """ takes full image path & checks if bytes are equal to that of imgur does not exist image """
+        dne_img = os.path.join(os.getcwd(), 'imgur-dne') # edit location if needed
+        with open(dne_img, 'rb') as f:
+            dne_data = bytearray(f.read())
+        with open(img_path, 'rb') as f:
+            data = bytearray(f.read())
+            if data == dne_data:
+                return True
+            else:
+                return False
 
 
 if __name__ == '__main__':

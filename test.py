@@ -30,7 +30,7 @@ def main():
 #    print()
 #    imguralbum.ImgurAlbumDownloader(url5, dir1, file_name='url5', debug=True).save_images()
 #    print()
-    imguralbum.ImgurAlbumDownloader(url6, dir1, file_name='url6', debug=True).save_images()    
+    imguralbum.ImgurAlbumDownloader(url6, dir1, file_name='url6', debug=True).save_images().on_complete(isImgurDneImage)
     
 #    
 if __name__ == '__main__':
