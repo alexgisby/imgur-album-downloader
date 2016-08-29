@@ -55,7 +55,6 @@ class ImgurDownloader:
             debug       : if True, prints several variables throughout __init__(...)
         TODO:
             1. Regex used to get self.album_title (OS may not save acceptable characters in html in file names)
-            2. Error? Getting HTTP 404 error with images that can be accessed via browser normally (e.g.: http://imgur.com/gallery/40Uow1Q )
             3. Get individual image titles if provided (note: this is located in _item: {...}; section of html alongside image keys/hashes and extensions)
             4. Support downloading of an imgur user's entire album collection
         """
