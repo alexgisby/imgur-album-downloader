@@ -185,6 +185,10 @@ class ImgurAlbumDownloader:
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
         """
+        # open imgur dne image to compare to downloaded image later
+        dne_path = os.path.join(os.getcwd(), 'imgur-dne')
+        dne_file = open(dne_path, 'rb')
+        
         # Try and create the album folder:
         albumFolder = ''
         if len(self.imageIDs) > 1:
@@ -218,15 +222,17 @@ class ImgurAlbumDownloader:
                 
             self.direct_download(image_url, path)
             
-            # delete img if imgur does not exist img was downloaded
-            if self.isImgurDneImage(path):
-                print ('DNE: ', filename)
-                print ('Deleting DNE image.')
-                os.remove(path)
+            with open(path, 'rb') as f:
+                if self.areFilesEqual(f, dne_file):
+                    print ('DNE: ', filename)
+                    print ('Deleting DNE image.')
+                    os.remove(path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
             fn()
+            
+        dne_file.close()
             
     def direct_download(self, image_url, path):
         if os.path.isfile(path):
@@ -249,6 +255,13 @@ class ImgurAlbumDownloader:
                 return True
             else:
                 return False
+                
+    def areFilesEqual(self, file1, file2):
+        """ given two file objects, checks to see if their bytes are equal """
+        if bytearray(file1.read()) == bytearray(file2.read()):
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':

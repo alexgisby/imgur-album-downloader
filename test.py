@@ -8,7 +8,7 @@ Created on Sat Aug 13 09:40:27 2016
 import imguralbum
 import os
 
-def main():
+def test():
     url = 'http://imgur.com/gallery/3ypGJ' # anime recommendations (big album)
     url1 = 'http://imgur.com/a/SVq41' # bird comic
     url3 = 'http://i.imgur.com/H37kxPH.jpg' # dog in vest - direct link, single img
@@ -30,8 +30,8 @@ def main():
 #    print()
 #    imguralbum.ImgurAlbumDownloader(url5, dir1, file_name='url5', debug=True).save_images()
 #    print()
-    imguralbum.ImgurAlbumDownloader(url6, dir1, file_name='url6', debug=True).save_images().on_complete(isImgurDneImage)
+    imguralbum.ImgurAlbumDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     
 #    
 if __name__ == '__main__':
-    main()
+    test()
