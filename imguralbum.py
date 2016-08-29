@@ -229,7 +229,7 @@ class ImgurDownloader:
         self.dne_file.close()
             
             
-    def direct_download(self, image_url, path, dne_file=None):
+    def direct_download(self, image_url, path):
         """ download data from url and save to path
             & optionally check if img downloaded is imgur dne file 
         """
