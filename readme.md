@@ -1,7 +1,7 @@
-# imgur Album Downloader
+# Imgur Downloader
 
 This is a simple Python script that contains a class and command line interface that
-allows you to download ann images at full resolution in an imgur album, all at once.
+allows you to download ann images at full resolution with any imgur link, all at once.
 
 ## jtara1 Fork - Features
 Features added:
