@@ -228,6 +228,7 @@ class ImgurDownloader:
             
         self.dne_file.close()
             
+            
     def direct_download(self, image_url, path, dne_file=None):
         """ download data from url and save to path
             & optionally check if img downloaded is imgur dne file 
@@ -241,6 +242,7 @@ class ImgurDownloader:
                 print ("Download failed.")
                 os.remove(path)
 
+
     def urlretrieve_hook(self, trans_count, block_size, total_size):
         """ hook for urllib.request.urlretrieve(...) function, upon download complete, check if image dne """
         if trans_count == (math.ceil(total_size / block_size)):
@@ -251,7 +253,8 @@ class ImgurDownloader:
                     print ('DNE: ', filename)
                     print ('Deleting DNE image.')
                     os.remove(self.path)
-                
+      
+          
     def is_imgur_dne_image(self, img_path):
         """ takes full image path & checks if bytes are equal to that of imgur does not exist image """
         dne_img = os.path.join(os.getcwd(), 'imgur-dne') # edit location if needed
@@ -263,16 +266,18 @@ class ImgurDownloader:
                 return True
             else:
                 return False
-                
+    
+            
     def are_files_equal(self, file1, file2):
         """ given two file objects, checks to see if their bytes are equal """
         if bytearray(file1.read()) == bytearray(file2.read()):
             return True
         else:
             return False
-            
+           
+           
     def remove_extension(self, path):
-        """ Returns filename found in url or path by locating image file extension """
+        """ Returns filename found in path by locating image file extension """
         
         exts = ['.png', '.jpg', 'webm', '.jpeg', '.jfif', '.gif', 'gifv', '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat', 
             '.heif', '.exif', '.ppm', '.cgm', '.svg']
@@ -282,18 +287,8 @@ class ImgurDownloader:
             if ext_index != -1:
                 break
         if ext_index == -1: # no ext found in path
-            return ''
-            
-        filename = []
-        # iterate backwards from where ext begins to the beginning of the path
-        for char_index in range(ext_index - 1, -1, -1): 
-            char = path[char_index]
-            if char == '/':
-                break
-            filename.append(char)
-            
-        filename.reverse()
-        return ''.join(filename) 
+            return path
+        return path[:ext_index]
 
 
 if __name__ == '__main__':
