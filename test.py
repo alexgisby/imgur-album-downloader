@@ -17,10 +17,9 @@ def test():
     url5 = 'http://i.imgur.com/SnkkAVU.png' # machines 4 colors - direct link, single img
     url6 = 'http://i.imgur.com/tL7hiQr.gif' # kneecap gif - direct link, single img (gif)
     
-    
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
 #    print (dir1)
-#    imguralbum.ImgurDownloader(url1, dir1, file_name='url1', debug=True).save_images()
+    imguralbum.ImgurDownloader(url1, dir1, file_name='url1', debug=True).save_images()
 #    print()
 #    imguralbum.ImgurDownloader(url2, dir1, file_name='url2', debug=True).save_images()
 #    print()
@@ -30,9 +29,8 @@ def test():
 #    print()
 #    imguralbum.ImgurDownloader(url5, dir1, file_name='url5', debug=True).save_images()
 #    print()
-    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
+#    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     print()
-
     
 if __name__ == '__main__':
     test()

@@ -41,6 +41,7 @@ as the album
 class ImgurException(Exception):
     def __init__(self, msg=False):
         self.msg = msg
+        print ('ImgurException: {0}'.format(msg))
 
 
 class ImgurDownloader:
@@ -58,6 +59,7 @@ class ImgurDownloader:
             3. Get individual image titles if provided (note: this is located in _item: {...}; section of html alongside image keys/hashes and extensions)
             4. Support downloading of an imgur user's entire album collection
         """
+        (self.dir_root, tail) = os.path.split(__file__)
         
         self.album_url = album_url
         self.dir_download = dir_download # directory to save image(s)
@@ -185,7 +187,7 @@ class ImgurDownloader:
         And if the folder doesn't exist, it'll try and create it.
         """
         # open imgur dne image to compare to downloaded image later
-        dne_path = os.path.join(os.getcwd(), 'imgur-dne.png')
+        dne_path = os.path.join(self.dir_root, 'imgur-dne.png')
         self.dne_file = open(dne_path, 'rb')
         
         # Try and create the album folder:
@@ -256,7 +258,7 @@ class ImgurDownloader:
           
     def is_imgur_dne_image(self, img_path):
         """ takes full image path & checks if bytes are equal to that of imgur does not exist image """
-        dne_img = os.path.join(os.getcwd(), 'imgur-dne.png') # edit location if needed
+        dne_img = os.path.join(self.dir_root, 'imgur-dne.png') # edit location if needed
         with open(dne_img, 'rb') as f:
             dne_data = bytearray(f.read())
         with open(img_path, 'rb') as f:
