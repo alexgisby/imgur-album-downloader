@@ -8,8 +8,6 @@ Features added:
 
 * supports imgur images that aren't "gallery" or "a" or "album" e.g.:
 
->e.g.:
-
 >http://imgur.com/SnkkAVU
 
 >http://i.imgur.com/SnkkAVU.png
@@ -38,7 +36,7 @@ Features added:
 
 * downloads imgur links with .gifv extension as a .webm file
 
-> ImgurDownloader('http://i.imgur.com/A61SaA1.gifv').save_images()
+> ImgurDownloader('http://i.imgur.com/A61SaA1.gifv')
 
 ## Requirements
 
@@ -89,4 +87,4 @@ MIT
 
 Originally written by [Alex Gisby](https://github.com/alexgisby) ([@alexgisby](http://twitter.com/alexgisby))
 
-With [Contributions from these amazing people!](https://github.com/alexgisby/imgur-album-downloader/graphs/contributors)
+With [Contributions from these amazing people!](https://github.com/jtara1/imgur-downloader/graphs/contributors)
