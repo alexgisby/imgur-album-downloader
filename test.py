@@ -17,7 +17,9 @@ def test():
     url2 = 'http://imgur.com/SnkkAVU' # SINGLE IMAGE, machines 4 colors
     url4 = 'http://imgur.com/gallery/40Uow1Q' # SINGLE IMAGE GALLERY, poopy butthole - single img 
     url5 = 'http://i.imgur.com/SnkkAVU.png' # DIRECT IMAGE LINK, machines 4 colors - direct link, single img
-    url6 = 'http://imgur.com/a/kfPrr' # SINGLE IMAGE ALBUM, # man and dog
+    url6 = 'http://imgur.com/a/kfPrr' # DNE SINGLE IMAGE ALBUM, man and dog
+    url7 = 'http://i.imgur.com/A61SaA1.gifv' # .GIFV FILE, star wars
+    
     
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
 #    print (dir1)
@@ -31,8 +33,11 @@ def test():
 #    print()
 #    imguralbum.ImgurDownloader(url5, dir1, file_name='url5', debug=True).save_images()
 #    print()
-    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=False).save_images()
+#    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     print()
+    imguralbum.ImgurDownloader(url7, dir1, file_name='url7', debug=True).save_images()
+    print()
+
     
 if __name__ == '__main__':
     test()

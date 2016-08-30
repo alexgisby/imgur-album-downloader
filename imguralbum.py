@@ -204,16 +204,20 @@ class ImgurDownloader:
 
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
-            image_url = "http://i.imgur.com/"+image[0]+image[1]
-
+            key = image[0]
+            ext = image[1]
+            if ext == '.gifv':
+                ext = '.webm' 
+            image_url = "http://i.imgur.com/"+key+ext
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
             )
-            
-            filename = prefix + image[0] + image[1]
+
+
+            filename = prefix + key + ext
             if len(self.imageIDs) == 1:
-                filename = self.album_title + image[1]
+                filename = self.album_title + ext
             self.path = os.path.join(dir_save, filename)
 
             # Run the callbacks:

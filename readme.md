@@ -28,11 +28,13 @@ Features added:
 
 >downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True)
 
-* new feature that deletes imgur does not exist image if it is downloaded implemented by comparing the bytes in hook function of urlretrieve function of self.direct_download(...)
+* deletes imgur does not exist image if it is downloaded implemented by comparing the bytes in hook function of urlretrieve function of self.direct_download(...)
 
     * added function is\_imgur\_dne\_image(self, img\_path) which returns True if the image from img\_path is the same image as the Imgur does not exist image false otherwise
 
     * added function are\_files\_equal(self, file1, file2) which compares the bytes and returns True if the bytes are equal, False otherwise
+
+* downloads imgur links with .gifv extension as a .webm file
 
 ## Requirements
 
