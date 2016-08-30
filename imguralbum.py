@@ -245,7 +245,7 @@ class ImgurDownloader:
 
     def urlretrieve_hook(self, trans_count, block_size, total_size):
         """ hook for urllib.request.urlretrieve(...) function, upon download complete, check if image dne """
-        if trans_count == (math.ceil(total_size / block_size)):
+        if trans_count == (math.ceil(trans_count * total_size / block_size)):
             # check if image is dne image and remove if it is
             filename = self.remove_extension(self.path)
             with open(self.path, 'rb') as file:
