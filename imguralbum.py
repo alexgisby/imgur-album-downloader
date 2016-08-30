@@ -41,7 +41,6 @@ as the album
 class ImgurException(Exception):
     def __init__(self, msg=False):
         self.msg = msg
-        print ('ImgurException: {0}'.format(msg))
 
 
 class ImgurDownloader:
