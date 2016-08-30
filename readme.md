@@ -8,13 +8,15 @@ Features added:
 
 * supports imgur images that aren't "gallery" or "a" or "album" e.g.:
 
+>e.g.:
+
 >http://imgur.com/SnkkAVU
 
 >http://i.imgur.com/SnkkAVU.png
 
 * uses album/gallery/image title as folder title that's created and contains image(s) with key appended e.g.:
 
->We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU)
+>We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU).png
 
 * \_\_init\_\_ function of ImgurDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
 
@@ -35,6 +37,8 @@ Features added:
     * added function are\_files\_equal(self, file1, file2) which compares the bytes and returns True if the bytes are equal, False otherwise
 
 * downloads imgur links with .gifv extension as a .webm file
+
+> ImgurDownloader('http://i.imgur.com/A61SaA1.gifv').save_images()
 
 ## Requirements
 
