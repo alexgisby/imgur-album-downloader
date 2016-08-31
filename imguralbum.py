@@ -44,7 +44,7 @@ class ImgurException(Exception):
 
 
 class ImgurDownloader:
-    def __init__(self, album_url, dir_download=os.getcwd(), file_name='', debug=False):
+    def __init__(self, album_url, dir_download=os.getcwd(), file_name='', delete_dne=True, debug=False):
         """
         Constructor. Pass in the album_url that you want to download.
         ARGUMENTS:
@@ -62,6 +62,9 @@ class ImgurDownloader:
         
         self.album_url = album_url
         self.dir_download = dir_download # directory to save image(s)
+        
+        self.delete_dne = delete_dne
+        self.debug = debug
 
         # Callback members:
         self.image_callbacks = []
@@ -82,7 +85,7 @@ class ImgurDownloader:
         self.album_key = match.group(5) # despite var name, this can refer to image key depending on album_url passed
         self.image_extension = match.group(7)
 
-        if debug:
+        if self.debug:
             print ("album key: " + self.album_key) # debug        
             print ("is_album: " + str(self.is_album)) # debug        
         
@@ -120,7 +123,7 @@ class ImgurDownloader:
         elif file_name != '':
             self.album_title = file_name
                     
-        if debug:
+        if self.debug:
             print ('album_title: ' + self.album_title) # debug   
             
         # get section from html that contains image ID(s) and file extensions of each ID
@@ -130,7 +133,7 @@ class ImgurDownloader:
             if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.album_key:
                 self.imageIDs.remove(self.imageIDs[0]) # removes the first element in imageIDs since this'll could be the album_key if this link has more than 1 img
 
-        if debug:
+        if self.debug:
             print ("imageIDs count: " + str(len(self.imageIDs))) # debug
             print ("imageIDs:\n" + str(self.imageIDs)) # debug
                         
@@ -250,13 +253,15 @@ class ImgurDownloader:
     def urlretrieve_hook(self, trans_count, block_size, total_size):
         """ hook for urllib.request.urlretrieve(...) function, upon download complete, check if image dne """
         if trans_count == (math.ceil(trans_count * total_size / block_size)):
-            # check if image is dne image and remove if it is
-            filename = self.remove_extension(self.path)
-            with open(self.path, 'rb') as file:
-                if self.are_files_equal(file, self.dne_file):
-                    print ('DNE: ', filename)
-                    print ('Deleting DNE image.')
-                    os.remove(self.path)
+            if self.delete_dne:
+                # check if image is dne image and remove if it is
+                filename = self.remove_extension(self.path)
+                with open(self.path, 'rb') as file:
+                    if self.are_files_equal(file, self.dne_file):
+                        if self.debug:       
+                            print ('DNE: ', filename)
+                        print ('Deleting DNE image.')
+                        os.remove(self.path)
       
           
     def is_imgur_dne_image(self, img_path):

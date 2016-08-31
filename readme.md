@@ -24,11 +24,16 @@ Features added:
 
 >downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img')
 
-* \_\_init\_\_ function of ImgurDownloaders takes a 4th (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
+* \_\_init\_\_ function of ImgurDownloader takes a 4th (optional) parameter, delete_dne=True, which checks each
+image downloaded and deletes it if its bytes match that of imgur-dne.png
 
 >downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True)
 
-* deletes imgur does not exist image if it is downloaded implemented by comparing the bytes in hook function of urlretrieve function of self.direct_download(...)
+* \_\_init\_\_ function of ImgurDownloader takes a 5th (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
+
+>downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True, True)
+
+* deletes imgur does not exist image if it is downloaded (now toggleable by \_\_init\_\_ parameter) implemented by comparing the bytes in hook function of urlretrieve function of self.direct_download(...)
 
     * added function is\_imgur\_dne\_image(self, img\_path) which returns True if the image from img\_path is the same image as the Imgur does not exist image false otherwise
 
