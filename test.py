@@ -24,7 +24,7 @@ def test():
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
     rand_name = str(int(time.time()))
 #    print (dir1)
-    # imguralbum.ImgurDownloader(url1, dir1, file_name='url1', debug=True).save_images()
+    # print(imguralbum.ImgurDownloader(url1, dir1, file_name=rand_name, debug=True).save_images())
 #    print()
 #    imguralbum.ImgurDownloader(url2, dir1, file_name='url2', debug=True).save_images()
 #    print()
@@ -36,9 +36,9 @@ def test():
 #    print()
 #    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     print()
-    imguralbum.ImgurDownloader(url7, dir1, file_name='url7', debug=True).save_images()
+    print(imguralbum.ImgurDownloader(url7, dir1, file_name='url7', debug=True).save_images())
     print()
-    imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, delete_dne=True, debug=True).save_images()
+    print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, delete_dne=True, debug=True).save_images())
 
     print()
 
