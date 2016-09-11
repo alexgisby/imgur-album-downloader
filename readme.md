@@ -33,11 +33,13 @@ image downloaded and deletes it if its bytes match that of imgur-dne.png
 
 >downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True, True)
 
-* deletes imgur does not exist image if it is downloaded (now toggleable by \_\_init\_\_ parameter) implemented by comparing the bytes in hook function of urlretrieve function of self.direct_download(...)
+* prevents downloading of imgur does not exist image if it is encountered (now toggleable by \_\_init\_\_ parameter) implemented by comparing the bytes of the HTTP request to that of a local imgur dne file in  self.direct_download(...)
 
     * added function is\_imgur\_dne\_image(self, img\_path) which returns True if the image from img\_path is the same image as the Imgur does not exist image false otherwise
 
     * added function are\_files\_equal(self, file1, file2) which compares the bytes and returns True if the bytes are equal, False otherwise
+
+> ImgurDownloader('http://i.imgur.com/removed.png', delete_dne=True, debug=True)
 
 * downloads imgur links with .gifv extension as a .webm file
 
@@ -54,7 +56,7 @@ Python >= 3.3
 Download all images from an album into the folder /Users/alex/images/downloaded
 
 	$ python3 imguralbum.py http://imgur.com/a/uOOju /Users/alex/images/downloaded
-	
+
 Downloads all images and puts them into an album in the current directory called "uOOju"
 
 	$ python3 imguralbum.py http://imgur.com/a/uOOju
@@ -72,7 +74,7 @@ through the command line. Here's an example of it's usage:
 
 ### Callbacks:
 You can hook into the classes process through a couple of callbacks:
-	
+
 	downloader.on_image_download()
 	downloader.on_complete()
 

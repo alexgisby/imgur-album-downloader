@@ -212,7 +212,7 @@ class ImgurDownloader:
             ext = image[1]
             if ext == '.gifv':
                 ext = '.webm'
-            self.image_url = "http://i.imgur.com/"+key+ext
+            image_url = "http://i.imgur.com/"+key+ext
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
@@ -221,13 +221,13 @@ class ImgurDownloader:
             filename = prefix + key + ext
             if len(self.imageIDs) == 1:
                 filename = self.album_title + ext
-            self.path = os.path.join(dir_save, filename)
+            path = os.path.join(dir_save, filename)
 
             # Run the callbacks:
             for fn in self.image_callbacks:
-                fn(counter, self.image_url, self.path)
+                fn(counter, image_url, path)
 
-            self.direct_download(self.image_url, self.path)
+            self.direct_download(image_url, path)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
@@ -244,7 +244,7 @@ class ImgurDownloader:
             print ("Skipping, already exists.")
         else:
             try:
-                # check if image is imgur dne image
+                # check if image is imgur dne image before we download anything
                 if self.delete_dne:
                     req = urllib.request.urlopen(image_url)
                     if self.are_files_equal(req, self.dne_file):
@@ -253,7 +253,7 @@ class ImgurDownloader:
                         return
 
                 # proceed with downloading if image is not dne or we're not checking for dne images
-                urllib.request.urlretrieve(self.image_url, path)
+                urllib.request.urlretrieve(image_url, path)
             except Exception as e:
                 print('[ImgurDownloader] %s' % e)
                 os.remove(path)
@@ -261,21 +261,9 @@ class ImgurDownloader:
 
     def urlretrieve_hook(self, trans_count, block_size, total_size):
         """ hook for urllib.request.urlretrieve(...) function, upon download complete, check if image dne """
-        if trans_count == 0:
-            dl_file = urllib.request.urlopen(self.image_url)
-        if (trans_count * block_size) >= total_size:
-            print('trans_count %s block_size %s total_size %s' % (trans_count, block_size, total_size))
-            if self.delete_dne:
-                time.sleep(5)
-                # check if image is dne image and remove if it is
-                filename = self.remove_extension(self.path)
-                print('Checking %s' % filename)
-                print('is dne: %s' % str(self.is_imgur_dne_image(self.path)))
-                if self.is_imgur_dne_image(self.path):
-                    if self.debug:
-                        print ('DNE: ', filename.split('/')[-1])
-                    print ('Deleting DNE image.')
-                    os.remove(self.path)
+        pass
+        # if (trans_count * block_size) >= total_size:
+        #     pass
 
 
     def is_imgur_dne_image(self, img_path):
@@ -285,7 +273,7 @@ class ImgurDownloader:
             dne_data = bytearray(f.read())
         with open(img_path, 'rb') as f:
             data = bytearray(f.read())
-        print('data_size %i data_dne_size %i' % (len(data), len(dne_data)))
+        # print('data_size %i data_dne_size %i' % (len(data), len(dne_data))) # the print that told me all
         if data == dne_data:
             return True
         else:
