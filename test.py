@@ -38,7 +38,7 @@ def test():
     print()
     # print(imguralbum.ImgurDownloader(url7, dir1, file_name=rand_name, delete_dne=False, debug=True).save_images())
     print()
-    print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, delete_dne=True, debug=True).save_images())
+    # print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, delete_dne=True, debug=True).save_images())
     print()
 
 def test_dne(path):
@@ -53,8 +53,9 @@ def test_dne(path):
 
     def remove_extension(path):
         """ Returns filename found in path by locating image file extension """
-        exts = ['.png', '.jpg', 'webm', '.jpeg', '.jfif', '.gif', 'gifv', '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat',
-            '.heif', '.exif', '.ppm', '.cgm', '.svg']
+        exts = ['.png', '.jpg', '.mp4', 'webm', '.jpeg', '.jfif', '.gif', 'gifv', 
+                '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat',
+                '.heif', '.exif', '.ppm', '.cgm', '.svg']
         for e in exts:
             ext_index = path.find(e)
             if ext_index != -1:

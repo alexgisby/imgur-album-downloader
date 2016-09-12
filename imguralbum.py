@@ -109,7 +109,7 @@ class ImgurDownloader:
             response_code = e.code
 
         if not self.response or self.response.getcode() != 200:
-            raise ImgurException("Error reading Imgur: Error Code %d" % response_code)
+            raise ImgurException("[ImgurDownloader] HTTP Response Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
@@ -208,12 +208,34 @@ class ImgurDownloader:
         if not os.path.exists(dir_save):
             os.makedirs(dir_save)
 
+        # return original content url & ext of .gifv link
+        # gifv_regex = re.compile('<meta property="og:url" *content="([\w.:/?&]*?)"')
+        # ext_regex = re.compile('.*?_item: .*?"ext":"(\.[a-zA-Z0-9]+)"', flags=re.DOTALL)
+        def get_gifv_info(url, key, ext):
+            """ Return original url & extension """
+            if url.endswith('.gifv'):
+                url = 'http://imgur.com/'+key
+            req = urllib.request.urlopen(url)
+            html = req.read().decode('utf-8')
+            search = re.search(ext_regex, html)
+            # either url wasn't a .gifv or regex search failed
+            if not search:
+                return url, ext
+            orig_ext = search.group(1)
+            return 'http://i.imgur.com/'+key+orig_ext, orig_ext
+
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
             key = image[0]
             ext = image[1]
-            ext = '.gif' if ext == 'gifv' else ext
+            # should be safe to save & open as .mp4
+            if ext == '.gifv':
+                ext = '.mp4'
+                # image_url, ext = get_gifv_info(image_url, key, ext)
+                # print('img_url: %s \next: %s' % (image_url, ext))
+
             image_url = "http://i.imgur.com/"+key+ext
+
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
                 counter
@@ -296,11 +318,26 @@ class ImgurDownloader:
         else:
             return False
 
+    def get_extension(self, path):
+        """ Returns extension found in URL or PATH by locating image file extension """
+
+        exts = ['.png', '.jpg', '.mp4', 'webm', '.jpeg', '.jfif', '.gif', 'gifv',
+                '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat',
+                '.heif', '.exif', '.ppm', '.cgm', '.svg']
+
+        for e in exts:
+            ext_index = path.find(e)
+            if ext_index != -1:
+                return e
+        if ext_index == -1: # no ext found in path
+            return ''
+
     def remove_extension(self, path):
         """ Returns filename found in path by locating image file extension """
 
-        exts = ['.png', '.jpg', 'webm', '.jpeg', '.jfif', '.gif', 'gifv', '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat',
-            '.heif', '.exif', '.ppm', '.cgm', '.svg']
+        exts = ['.png', '.jpg', '.mp4', 'webm', '.jpeg', '.jfif', '.gif', 'gifv',
+                '.bmp', '.tif', '.tiff', '.webp', '.bpg', '.bat',
+                '.heif', '.exif', '.ppm', '.cgm', '.svg']
 
         for e in exts:
             ext_index = path.find(e)

@@ -42,7 +42,7 @@ image downloaded and deletes it if its bytes match that of imgur-dne.png
             ImgurDownloader('http://i.imgur.com/removed.png', delete_dne=True, debug=True).save_images()
 
 * downloads imgur links with .gifv extension as a
-~~.webm~~ .gif file
+~~.webm~~ ~~.gif~~ .mp4 file
 
         ImgurDownloader('http://i.imgur.com/A61SaA1.gifv').save_images()
 
