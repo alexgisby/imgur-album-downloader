@@ -36,10 +36,9 @@ def test():
 #    print()
 #    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     print()
-    print(imguralbum.ImgurDownloader(url7, dir1, file_name='url7', debug=True).save_images())
+    # print(imguralbum.ImgurDownloader(url7, dir1, file_name=rand_name, delete_dne=False, debug=True).save_images())
     print()
     print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, delete_dne=True, debug=True).save_images())
-
     print()
 
 def test_dne(path):

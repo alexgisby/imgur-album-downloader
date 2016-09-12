@@ -77,7 +77,7 @@ class ImgurDownloader:
             raise ImgurException("URL must be a valid Imgur Album")
 
         self.protocol = match.group(1)
-        self.direct_or_mobile = match.group(3) # could use a better var name
+        self.domain_prefix = match.group(3)
         self.imgur_link_type = match.group(4)
         if self.imgur_link_type == "/":
             self.is_album = False
@@ -90,7 +90,7 @@ class ImgurDownloader:
             print ("album key: " + self.album_key) # debug
             print ("is_album: " + str(self.is_album)) # debug
 
-        if self.direct_or_mobile and self.image_extension:
+        if self.domain_prefix and self.image_extension:
             self.album_title = self.album_key if file_name == '' else file_name
             self.imageIDs = [(self.album_key, self.image_extension)]
             return
@@ -212,8 +212,7 @@ class ImgurDownloader:
         for (counter, image) in enumerate(self.imageIDs, start=1):
             key = image[0]
             ext = image[1]
-            if ext == '.gifv':
-                ext = '.webm'
+            ext = '.gif' if ext == 'gifv' else ext
             image_url = "http://i.imgur.com/"+key+ext
             prefix = "%0*d-" % (
                 int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
@@ -296,7 +295,6 @@ class ImgurDownloader:
             return True
         else:
             return False
-
 
     def remove_extension(self, path):
         """ Returns filename found in path by locating image file extension """
