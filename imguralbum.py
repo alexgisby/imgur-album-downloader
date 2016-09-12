@@ -245,8 +245,10 @@ class ImgurDownloader:
         """ download data from url and save to path
             & optionally check if img downloaded is imgur dne file
         """
+        dl, skp = 0, 0
         if os.path.isfile(path):
-            print ("Skipping, already exists.")
+            print ("[ImgurDownloader] Skipping, already exists.")
+            skp = 1
         else:
             try:
                 # check if image is imgur dne image before we download anything
@@ -259,11 +261,12 @@ class ImgurDownloader:
 
                 # proceed with downloading if image is not dne or we're not checking for dne images
                 urllib.request.urlretrieve(image_url, path)
-                return 1, 0
+                dl = 1
             except Exception as e:
                 print('[ImgurDownloader] %s' % e)
                 os.remove(path)
-        return 0, 0
+                skp = 1
+        return dl, skp
 
 
     def urlretrieve_hook(self, trans_count, block_size, total_size):
