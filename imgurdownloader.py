@@ -77,15 +77,6 @@ class ImgurDownloader:
         domain_prefix = match.group(3)
 
         imgur_link_type = match.group(4)
-        if imgur_link_type == '': # single imgur image
-            self.is_album = False
-        elif imgur_link_type == "r": # refers to subreddit categorized link
-            self.is_album = False
-            # reinitialize object with redirected URL
-            # redirect_url = '%s://www.imgur.com/gallery/%s' % (match.group(1), match.group(6))
-            # self.__init__(redirect_url, dir_download, file_name, delete_dne, debug)
-        else:
-            self.is_album = True
 
         # key is also referred to as hash in raw HTML
         self.main_key = match.group(5) if imgur_link_type != 'r' else match.group(6)
@@ -100,14 +91,8 @@ class ImgurDownloader:
             self.imageIDs = [(self.main_key, image_extension)]
             return
 
-        if self.is_album:
-            # Read the no-script version of the page for all the images:
-            fullListURL = "http://imgur.com/a/" + self.main_key + "/layout/blog"
-        elif not self.is_album:
-            fullListURL = imgur_url
-
         try:
-            self.response = urllib.request.urlopen(url=fullListURL)
+            self.response = urllib.request.urlopen(url=imgur_url)
             response_code = self.response.getcode()
         except Exception as e:
             self.response = False
