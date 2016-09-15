@@ -16,6 +16,35 @@ Features added:
 
     >We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU).png
 
+* prevents downloading of imgur does not exist image if it is encountered (now toggleable by \_\_init\_\_ parameter) implemented by comparing the bytes of the HTTP request to that of a local imgur dne file in  self.direct_download(...)
+
+    * added function is\_imgur\_dne\_image(self, img\_path) which returns True if the image from img\_path is the same image as the Imgur does not exist image false otherwise
+
+    * added function are\_files\_equal(self, file1, file2) which compares the bytes and returns True if the bytes are equal, False otherwise
+
+            ImgurDownloader('http://i.imgur.com/removed.png', delete_dne=True, debug=True).save_images()
+
+* downloads imgur links with .gifv extension as a
+~~.webm~~ ~~.gif~~ .mp4 file
+
+        ImgurDownloader('http://i.imgur.com/A61SaA1.gifv').save_images()
+
+* save_images & direct_download methods now return tuple of two integers, the first representing successful downloads and the second representing skipped download (either failed or Imgur DNE detected) example, the value on the the last line of the output is what's returned from save_images method
+
+    Code ran (url1 is an Imugr Album with 5 images):
+
+            print(imguralbum.ImgurDownloader(url1, dir1, file_name=rand_name, debug=False).save_images())
+
+    Printed output:
+
+        (5, 0)
+
+* supports links associated with a subreddit (thanks for the tip [rachmadaniHaryono](https://github.com/rachmadaniHaryono))
+
+        ImgurDownloader('http://imgur.com/r/awwnime/W7N6A').save_images()
+
+#### \_\_init\_\_ function parameter changes:
+
 * \_\_init\_\_ function of ImgurDownloader takes an 2nd (optional) parameter, dir_download=os.getcwd(), which allows for specific directory to download to (not adapted for cli), e.g.:
 
         downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/')
@@ -32,36 +61,6 @@ image downloaded and deletes it if its bytes match that of imgur-dne.png
 * \_\_init\_\_ function of ImgurDownloader takes a 5th (optional) parameter, debug=False, which prints a number of variables throughout the code as it runs
 
         downloader = ImgurDownloader('http://imgur.com/SnkkAVU', '/home/user/Downloads/', 'my-img', True, True)
-
-* prevents downloading of imgur does not exist image if it is encountered (now toggleable by \_\_init\_\_ parameter) implemented by comparing the bytes of the HTTP request to that of a local imgur dne file in  self.direct_download(...)
-
-    * added function is\_imgur\_dne\_image(self, img\_path) which returns True if the image from img\_path is the same image as the Imgur does not exist image false otherwise
-
-    * added function are\_files\_equal(self, file1, file2) which compares the bytes and returns True if the bytes are equal, False otherwise
-
-            ImgurDownloader('http://i.imgur.com/removed.png', delete_dne=True, debug=True).save_images()
-
-* downloads imgur links with .gifv extension as a
-~~.webm~~ ~~.gif~~ .mp4 file
-
-        ImgurDownloader('http://i.imgur.com/A61SaA1.gifv').save_images()
-
-* save_images & direct_download methods now return tuple of two integers, the first representing successful downloads and the second representing skipped download (either failed or Imgur DNE detected) example, the value on the the last line of the output is what's returned from save_images method
-
-    Code ran:
-
-            print(imguralbum.ImgurDownloader(url1, dir1, file_name=rand_name, debug=True).save_images())
-
-    Printed output:
-
-        album_key: SVq41
-        is_album: True
-        album_title: 1473630867
-        imageIDs count: 5
-        imageIDs:
-        [('z25tnfF', '.png'), ('eR27JxQ', '.png'), ('tsGMdgr', '.png'), ('cC0I2rs', '.png'), ('SzqTvSx', '.gif')]
-        (5, 0)
-
 
 
 ## Requirements
