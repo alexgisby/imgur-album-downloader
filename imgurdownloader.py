@@ -67,32 +67,42 @@ class ImgurDownloader:
         self.complete_callbacks = []
 
         # Check the URL is actually imgur:
-        match = re.match("(https?)\:\/\/(www\.)?(i\.|m\.)?imgur\.com(/a|/gallery|/)/?([a-zA-Z0-9]+)(#[0-9]+)?(.\w*)?", imgur_url)
+        match = re.match(
+            "(https?)\:\/\/(www\.)?(i\.|m\.)?imgur\.com/([a|gallery|r]?)/?([\w_]*)/?([\w_]*)(#[0-9]+)?(.\w*)?",
+            imgur_url)
         if not match:
             raise ImgurException("URL must be a valid Imgur Album")
 
         self.protocol = match.group(1)
-        self.domain_prefix = match.group(3)
-        self.imgur_link_type = match.group(4)
-        if self.imgur_link_type == "/":
+        domain_prefix = match.group(3)
+
+        imgur_link_type = match.group(4)
+        if imgur_link_type == '': # single imgur image
             self.is_album = False
+        elif imgur_link_type == "r": # refers to subreddit categorized link
+            self.is_album = False
+            # reinitialize object with redirected URL
+            # redirect_url = '%s://www.imgur.com/gallery/%s' % (match.group(1), match.group(6))
+            # self.__init__(redirect_url, dir_download, file_name, delete_dne, debug)
         else:
             self.is_album = True
-        self.album_key = match.group(5) # despite var name, this can refer to image key depending on imgur_url passed
-        image_extension = match.group(7)
+
+        # key is also referred to as hash in raw HTML
+        self.main_key = match.group(5) if imgur_link_type != 'r' else match.group(6)
+        image_extension = match.group(8)
 
         if self.debug:
-            print ("album key: " + self.album_key) # debug
-            print ("is_album: " + str(self.is_album)) # debug
+            print ("main key: " + self.main_key) # debug
 
-        if self.domain_prefix and image_extension:
-            self.album_title = self.album_key if file_name == '' else file_name
-            self.imageIDs = [(self.album_key, image_extension)]
+        # handle direct image links
+        if domain_prefix and image_extension:
+            self.album_title = self.main_key if file_name == '' else file_name
+            self.imageIDs = [(self.main_key, image_extension)]
             return
 
         if self.is_album:
             # Read the no-script version of the page for all the images:
-            fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
+            fullListURL = "http://imgur.com/a/" + self.main_key + "/layout/blog"
         elif not self.is_album:
             fullListURL = imgur_url
 
@@ -110,12 +120,12 @@ class ImgurDownloader:
         html = self.response.read().decode('utf-8')
 
         # default album_title
-        self.album_title = self.album_key
+        self.album_title = self.main_key
         if file_name == '':
             # search for album / image title of webpage
             search = re.search("<title>\s*(.*) - (?:Album on )*?Imgur", html)
             if search:
-                self.album_title = search.group(1) + ' (' + self.album_key + ')'
+                self.album_title = search.group(1) + ' (' + self.main_key + ')'
         elif file_name != '':
             self.album_title = file_name
 
@@ -126,7 +136,7 @@ class ImgurDownloader:
         search = re.search('(_item:.*?};)', html, flags=re.DOTALL)
         if search:
             self.imageIDs = re.findall('.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', search.group(1))
-            if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.album_key:
+            if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.main_key:
                 self.imageIDs.remove(self.imageIDs[0]) # removes the first element in imageIDs since this'll could be the album_key if this link has more than 1 img
 
         if self.debug:
@@ -157,7 +167,7 @@ class ImgurDownloader:
         Returns the key of this album. Helpful if you plan on generating your own
         folder names.
         """
-        return self.album_key
+        return self.main_key
 
 
     def on_image_download(self, callback):
