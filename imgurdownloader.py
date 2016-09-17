@@ -45,14 +45,20 @@ class ImgurException(Exception):
 class ImgurDownloader:
     def __init__(self, imgur_url, dir_download=os.getcwd(), file_name='',
                 delete_dne=True, debug=False):
-        """
-        Constructor. Pass in the imgur_url that you want to download.
-        Arguments:
-            imgur_url: url of imgur gallery, album, single img, or direct url of image
-            dir_download: core directory for location to save_images(...), (path passed in save_images(...) out prioritizes this one)
-            file_name: name of folder containing images from album or name of single image (depending on imgur_url)
-                          if file_name given, it prioritizes over webpage title and imgur key
-            debug: if True, prints several variables throughout __init__(...)
+        """Gather imgur hashes & extensions from the url passed
+
+        :param imgur_url: url of imgur gallery, album, single img, or direct
+            url of image
+        :param dir_download: core directory to save_images(...),
+            (directory passed in save_images(...) out prioritizes this one)
+        :param file_name: name of folder containing images from album or name
+            of single image (depending on imgur_url) if file_name given,
+            it prioritizes over webpage title and imgur key
+        :param delete_dne: prevent downloading of Imgur Does Not Exist image
+            if encountered
+        :param debug: prints several variables throughout the class
+
+        :rtype: None
         """
         (self.dir_root, tail) = os.path.split(__file__)
 
@@ -204,7 +210,7 @@ class ImgurDownloader:
         # gifv_regex = re.compile('<meta property="og:url" *content="([\w.:/?&]*?)"')
         # ext_regex = re.compile('.*?_item: .*?"ext":"(\.[a-zA-Z0-9]+)"', flags=re.DOTALL)
         def get_gifv_info(url, key, ext):
-            """ Return original url & extension """
+            """Return original url & extension"""
             if url.endswith('.gifv'):
                 url = 'http://imgur.com/'+key
             req = urllib.request.urlopen(url)
@@ -255,7 +261,7 @@ class ImgurDownloader:
 
 
     def direct_download(self, image_url, path):
-        """ download data from url and save to path
+        """download data from url and save to path
             & optionally check if img downloaded is imgur dne file
         """
         def are_files_equal(file1, file2):
@@ -288,7 +294,7 @@ class ImgurDownloader:
 
 
     def is_imgur_dne_image(self, img_path):
-        """ takes full image path & checks if bytes are equal to that of imgur does not exist image """
+        """takes full image path & checks if bytes are equal to that of imgur does not exist image"""
         dne_img = os.path.join(self.dir_root, 'imgur-dne.png') # edit location if needed
         with open(dne_img, 'rb') as f:
             dne_data = bytearray(f.read())
