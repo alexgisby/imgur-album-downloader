@@ -265,7 +265,7 @@ class ImgurDownloader:
         dl, skp = 0, 0
         if os.path.isfile(path):
             skp = 1
-            raise ImgurException('%s already exists.')
+            raise ImgurException('%s already exists.' % path)
         else:
             try:
                 # check if image is imgur dne image before we download anything
