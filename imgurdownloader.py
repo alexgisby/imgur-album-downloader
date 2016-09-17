@@ -120,13 +120,15 @@ class ImgurDownloader:
         # get section from html that contains image ID(s) and file extensions of each ID
         search = re.search('(_item:.*?};)', html, flags=re.DOTALL)
         if search:
-            self.imageIDs = re.findall('.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', search.group(1))
+            # this'll fix those albums with one picture
+            if '"images"' in search.group(0):
+                search = re.search('"images".*?]', search.group(0), flags=re.DOTALL)
+            self.imageIDs = re.findall('.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', search.group(0))
             if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.main_key:
-                self.imageIDs.remove(self.imageIDs[0]) # removes the first element in imageIDs since this'll could be the album_key if this link has more than 1 img
-
+                self.imageIDs.remove(self.imageIDs[0]) # removes the first element in imageIDs since this'll be the main_key if this link has more than 1 img
         if self.debug:
-            print ("imageIDs count: " + str(len(self.imageIDs))) # debug
-            print ("imageIDs:\n" + str(self.imageIDs)) # debug
+            print ("imageIDs count: %s" % str(len(self.imageIDs))) # debug
+            print ("imageIDs:\n%s" % str(self.imageIDs)) # debug
 
         self.cnt = Counter()
         for i in self.imageIDs:
@@ -262,8 +264,8 @@ class ImgurDownloader:
 
         dl, skp = 0, 0
         if os.path.isfile(path):
-            print ("[ImgurDownloader] Skipping, already exists.")
             skp = 1
+            raise ImgurException('%s already exists.')
         else:
             try:
                 # check if image is imgur dne image before we download anything
@@ -278,9 +280,10 @@ class ImgurDownloader:
                 urllib.request.urlretrieve(image_url, path)
                 dl = 1
             except Exception as e:
-                print('[ImgurDownloader] %s' % e)
+                # print('[ImgurDownloader] %s' % e)
                 os.remove(path)
                 skp = 1
+                raise ImgurException(e)
         return dl, skp
 
 
