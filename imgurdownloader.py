@@ -38,9 +38,15 @@ as the album
 
 
 class ImgurException(Exception):
+    """General exception class for errors from Imgur & this program"""
     def __init__(self, msg=False):
         self.msg = msg
 
+
+class FileExistsException(Exception):
+    """Exception for when file already exists locally"""
+    def __init__(self, msg=False):
+        self.msg = msg
 
 class ImgurDownloader:
     def __init__(self, imgur_url, dir_download=os.getcwd(), file_name='',
@@ -271,7 +277,7 @@ class ImgurDownloader:
         dl, skp = 0, 0
         if os.path.isfile(path):
             skp = 1
-            raise ImgurException('%s already exists.' % path)
+            raise FileExistsException('%s already exists.' % os.path.basename(path))
         else:
             try:
                 # check if image is imgur dne image before we download anything
