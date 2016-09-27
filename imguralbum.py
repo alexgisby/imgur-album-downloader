@@ -76,7 +76,9 @@ class ImgurAlbumDownloader:
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
         self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
-        
+
+        self.imageIDs = list(set(self.imageIDs))
+
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
@@ -92,7 +94,7 @@ class ImgurAlbumDownloader:
     def list_extensions(self):
         """
         Returns list with occurrences of extensions in descending order.
-        """  
+        """
         return self.cnt.most_common()
 
 
@@ -182,7 +184,7 @@ if __name__ == '__main__':
 
         for i in downloader.list_extensions():
             print(("Found {0} files with {1} extension".format(i[1],i[0])))
-  
+
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
