@@ -36,19 +36,23 @@ as the album
 """
 
 
+class BaseException(Exception):
+    """My BaseException class used to define self.msg"""
+    def __init__(self, msg=False):
+        self.msg = msg
 
-class ImgurException(Exception):
+
+class ImgurException(BaseException):
     """General exception class for errors from Imgur & this program"""
-    def __init__(self, msg=False):
-        self.msg = msg
 
 
-class FileExistsException(Exception):
+class FileExistsException(BaseException):
     """Exception for when file already exists locally"""
-    def __init__(self, msg=False):
-        self.msg = msg
+
 
 class ImgurDownloader:
+    """Parses imgur and downloads image(s)"""
+
     def __init__(self, imgur_url, dir_download=os.getcwd(), file_name='',
                 delete_dne=True, debug=False):
         """Gather imgur hashes & extensions from the url passed
@@ -66,7 +70,8 @@ class ImgurDownloader:
 
         :rtype: None
         """
-        (self.dir_root, tail) = os.path.split(__file__)
+        self.dir_root = os.path.dirname(__file__)
+        self.dne_path = os.path.join(self.dir_root, 'imgur-dne.png')
 
         self.imgur_url = imgur_url
         self.dir_download = dir_download # directory to save image(s)
@@ -193,10 +198,6 @@ class ImgurDownloader:
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
         """
-        # open imgur dne image to compare to downloaded image later
-        dne_path = os.path.join(self.dir_root, 'imgur-dne.png')
-        self.dne_file = open(dne_path, 'rb')
-
         # Try and create the album folder:
         albumFolder = ''
         if len(self.imageIDs) > 1:
@@ -262,7 +263,6 @@ class ImgurDownloader:
         for fn in self.complete_callbacks:
             fn()
 
-        self.dne_file.close()
         return downloaded, skipped
 
 
@@ -283,12 +283,17 @@ class ImgurDownloader:
                 # check if image is imgur dne image before we download anything
                 if self.delete_dne:
                     req = urllib.request.urlopen(image_url)
-                    if are_files_equal(req, self.dne_file):
+                    dne_file = open(self.dne_path)
+                    is_dne = are_files_equal(req, dne_file)
+                    dne_file.close()
+                    if is_dne:
                         if self.debug:
-                            print ('[ImgurDownloader] DNE: %s' % path.split('/')[-1])
+                            print ('[ImgurDownloader] DNE: %s' %
+                                path.split('/')[-1])
                         return 0, 1
 
-                # proceed with downloading if image is not dne or we're not checking for dne images
+                # proceed with downloading if image is not dne or we're not
+                # checking for dne images
                 urllib.request.urlretrieve(image_url, path)
                 dl = 1
             except Exception as e:
