@@ -80,7 +80,9 @@ class ImgurAlbumDownloader:
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
 
-        self.album_title = re.search('images?\s*:\s*{"id":"%s".*?"title":"(.*?)"' % self.album_key.strip() ,html).group(1)
+        self.album_title = re.search('images?\s*:\s*{"id":"%s".*?"title":"(.*?)","' % self.album_key.strip() ,html).group(1)
+        # title may have escaped characters, we don't want backslashes in our string
+        self.album_title = self.album_title.translate({ord("\\"):"" in "\\"})
 
         html = html.splitlines()
         for line in html:
@@ -148,7 +150,7 @@ class ImgurAlbumDownloader:
         # Try and create the album folder:
         if foldername:
             albumFolder = foldername
-        elif self.album_title is None or self.album_title is "":
+        elif self.album_title is None or self.album_tiescappedtle is "":
             print("Album has no name, it will be named after ID contained in album URL.\n")
             albumFolder = self.album_title = self.album_key
         else:
@@ -201,12 +203,11 @@ if __name__ == '__main__':
         # Fire up the class:
         downloader = ImgurAlbumDownloader(args[1])
 
-        print(("\nFound {0} images in album called \"{1}\"\n".format(downloader.num_images(),downloader.album_title)))
+        print(("\nFound {0} images in album called \"{1}\"\n".format(downloader.num_images(),str(downloader.album_title ))))
 
         for i in downloader.list_extensions():
             print(("Found {0} files with {1} extension".format(i[1],i[0])))
         print()
-
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
