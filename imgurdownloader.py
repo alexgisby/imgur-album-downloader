@@ -16,10 +16,12 @@ Copyright Alex Gisby <alex@solution10.com>
 import sys
 import re
 import urllib.request, urllib.parse, urllib.error
+from urllib.error import HTTPError
 import os
 import math
 import time
 from collections import Counter
+import logging
 
 __doc__ = """
 Quickly and easily download images from Imgur.
@@ -36,17 +38,12 @@ as the album
 """
 
 
-class BaseException(Exception):
-    """My BaseException class used to define self.msg"""
+class ImgurException(Exception):
+    """General exception class for errors from Imgur & this program"""
     def __init__(self, msg=False):
         self.msg = msg
 
-
-class ImgurException(BaseException):
-    """General exception class for errors from Imgur & this program"""
-
-
-class FileExistsException(BaseException):
+class FileExistsException(ImgurException):
     """Exception for when file already exists locally"""
 
 
@@ -78,6 +75,8 @@ class ImgurDownloader:
 
         self.delete_dne = delete_dne
         self.debug = debug
+
+        self.log = logging.getLogger('ImgurDownloader')
 
         # Callback members:
         self.image_callbacks = []
@@ -276,31 +275,40 @@ class ImgurDownloader:
 
         dl, skp = 0, 0
         if os.path.isfile(path):
-            skp = 1
             raise FileExistsException('%s already exists.' % os.path.basename(path))
         else:
             try:
+                request = urllib.request.urlopen(image_url)
+                redirect_url = request.geturl()
+
+                # check if image did not exist and url got redirected
+                if image_url != redirect_url:
+                    self.log.debug('url, redirected_url = %s, %s' % (image_url,
+                        redirect_url))
+                    if redirect_url == 'http://imgur.com/':
+                        raise HTTPError(404, "Image redirected to non-image link",
+                            redirect_url, None, None)
+
                 # check if image is imgur dne image before we download anything
                 if self.delete_dne:
-                    req = urllib.request.urlopen(image_url)
-                    dne_file = open(self.dne_path)
-                    is_dne = are_files_equal(req, dne_file)
-                    dne_file.close()
-                    if is_dne:
-                        if self.debug:
-                            print ('[ImgurDownloader] DNE: %s' %
-                                path.split('/')[-1])
-                        return 0, 1
+                    with open(self.dne_path, 'rb') as dne_file:
+                        if are_files_equal(request, dne_file):
+                            if self.debug:
+                                print ('[ImgurDownloader] DNE: %s' %
+                                    path.split('/')[-1])
+                            return 0, 1
 
                 # proceed with downloading if image is not dne or we're not
                 # checking for dne images
                 urllib.request.urlretrieve(image_url, path)
                 dl = 1
-            except Exception as e:
+            except HTTPError as e:
+                skp = 1
+            except FileExistsException as e:
                 # print('[ImgurDownloader] %s' % e)
                 os.remove(path)
                 skp = 1
-                raise ImgurException(e)
+                # raise ImgurException(e)
         return dl, skp
 
 
@@ -312,6 +320,11 @@ class ImgurDownloader:
         with open(img_path, 'rb') as f:
             data = bytearray(f.read())
         return True if data == dne_data else False
+
+
+    def get_hash(self, img_path):
+        with open(img_path, 'r') as f:
+            print( hashlib.md5(f).hexdigest() )
 
 
 
