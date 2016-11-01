@@ -84,7 +84,7 @@ class ImgurDownloader:
 
         # Check the URL is actually imgur:
         match = re.match(
-            "(https?)\:\/\/(www\.)?(i\.|m\.)?imgur\.com/([a|gallery|r]?)/?([\w_]*)/?([\w_]*)(#[0-9]+)?(.\w*)?",
+            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a|gallery|r)?/?([\w_]*)/?([\w_]*)(#[0-9]+)?(.\w*)?",
             imgur_url)
         if not match:
             raise ImgurException("URL must be a valid Imgur Album")
@@ -99,6 +99,7 @@ class ImgurDownloader:
         image_extension = match.group(8)
 
         if self.debug:
+            print("imgur_link_type: {}".format(imgur_link_type))
             print("main key: " + self.main_key)  # debug
 
         # handle direct image links
@@ -137,7 +138,7 @@ class ImgurDownloader:
         search = re.search('(_item:.*?};)', html, flags=re.DOTALL)
         if search:
             # this'll fix those albums with one picture
-            if '"images"' in search.group(0):
+            if '"count"' in search.group(0):
                 search = re.search('"images".*?]', search.group(0), flags=re.DOTALL)
             self.imageIDs = re.findall('.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', search.group(0))
             # removes the 1st element in imageIDs since this'll be the main_key if this link has more than 1 img
@@ -277,14 +278,10 @@ class ImgurDownloader:
                                       path.split('/')[-1])
                             return 0, 1
 
-                # proceed with downloading if image is not dne or we're not
-                # checking for dne images
+                # proceed with downloading
                 urllib.request.urlretrieve(image_url, path)
                 dl = 1
-            except HTTPError as e:
-                skp = 1
-            except FileExistsException as e:
-                os.remove(path)
+            except (HTTPError, FileExistsError):
                 skp = 1
         return dl, skp
 

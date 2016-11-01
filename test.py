@@ -23,35 +23,37 @@ def test():
     url9 = 'http://imgur.com/r/awwnime/YldNww8' # /r/Awwnime LINK, snake girl
     url10 = 'http://imgur.com/r/awwnime/W7N6A' # /r/Awwnime ALBUM LINK, anime girl HTTP ERROR 404
     url11 = 'http://imgur.com/r/awwnime/poDoh' # /r/Awwnime ALBUM LINK, anime girl w/ bow
+    url12 = 'http://imgur.com/gallery/6rnpOQS'  # ALBUM SINGLE IMAGE, damaged helmet
 
 
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
     rand_name = str(int(time.time()))
-    print (dir1)
+    print(dir1)
     print(imguralbum.ImgurDownloader(url1, dir1, file_name=rand_name, debug=True).save_images())
     print()
     imguralbum.ImgurDownloader(url2, dir1, file_name='url2', debug=True).save_images()
     print()
     imguralbum.ImgurDownloader(url3, dir1, file_name='url3', debug=True).save_images()
     print()
-    # imguralbum.ImgurDownloader(url4, dir1, file_name='url4', debug=True).save_images()
+    imguralbum.ImgurDownloader(url4, dir1, file_name='url4', debug=True).save_images()
     print()
-    # imguralbum.ImgurDownloader(url5, dir1, file_name='url5', debug=True).save_images()
-    # print()
-    # imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
+    imguralbum.ImgurDownloader(url5, dir1, file_name='url5', debug=True).save_images()
     print()
-    # print(imguralbum.ImgurDownloader(url7, dir1, file_name=rand_name, delete_dne=False, debug=True).save_images())
+    imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
+    print()
+    print(imguralbum.ImgurDownloader(url7, dir1, file_name=rand_name, delete_dne=False, debug=True).save_images())
     print()
     print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, debug=True).save_images())
-    # print()
-    # imguralbum.ImgurDownloader(url8, dir1, file_name='url8', debug=True).save_images()
-    # print()
-    # imguralbum.ImgurDownloader(url9, dir1, file_name='url9', debug=True).save_images()
-    # print()
-    # imguralbum.ImgurDownloader(url10, dir1, file_name='url10', debug=True).save_images()
-    # print()
-    # imguralbum.ImgurDownloader(url11, dir1, file_name='url11', debug=True).save_images()
-    #
+    print()
+    imguralbum.ImgurDownloader(url8, dir1, file_name='url8', debug=True).save_images()
+    print()
+    imguralbum.ImgurDownloader(url9, dir1, file_name='url9', debug=True).save_images()
+    print()
+    imguralbum.ImgurDownloader(url10, dir1, file_name='url10', debug=True).save_images()
+    print()
+    imguralbum.ImgurDownloader(url11, dir1, file_name='url11', debug=True).save_images()
+
+    imguralbum.ImgurDownloader(url12, dir1, file_name='helmetdmg', debug=True).save_images()
 
 def test_dne(path):
     dne_file = open(os.path.join(os.getcwd(), 'imgur-dne.png'), 'rb')
@@ -79,8 +81,8 @@ def test_dne(path):
     filename = remove_extension(path)
     with open(path, 'rb') as file:
         if are_files_equal(file, dne_file):
-            print ('DNE: ', filename)
-            print ('Deleting DNE image.')
+            print('DNE: ', filename)
+            print('Deleting DNE image.')
             # os.remove(path)
         else:
             print('not dne img')
