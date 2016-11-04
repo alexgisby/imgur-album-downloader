@@ -4,23 +4,30 @@ This is a simple Python script that contains a class and command line interface 
 allows you to download ann images at full resolution with any imgur link, all at once.
 
 ## jtara1 Fork - Features
-Features added:
 
 **tl;dl comparison of my fork & original repo**
 
 - Here's some examples of the types of links that are now supported:
 
       http://imgur.com/FVRUGe2
+
       http://imgur.com/gallery/LHCvGPA
+
       http://imgur.com/r/awwnime/W7N6A
+
       http://i.imgur.com/j9W9tSi.jpg
+
       http://imgur.com/a/SVq41
+
       http://i.imgur.com/A61SaA1.gifv
+
 
 - Name of album folder or image is determined by HTML `<title>` value or parameters passed
 - Prevents downloading of Imgur Does Not Exist image (by checking if direct link url got redirected & comparing the bytearrays of the direct link image with that of a local file).
 
 ---
+
+Features added:
 
 * supports imgur images that aren't "gallery" or "a" or "album" e.g.:
 
