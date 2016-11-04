@@ -193,6 +193,9 @@ class ImgurDownloader:
         Saves the images from the album into a folder given by foldername.
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
+
+        :return: final filenames of each file successfully downloaded, numb of images skipped
+
         """
         # Try and create the album folder:
         albumFolder = ''
@@ -208,12 +211,13 @@ class ImgurDownloader:
         if not os.path.exists(dir_save):
             os.makedirs(dir_save)
 
+        final_filenames = []
         # And finally loop through and save the images:
         for (counter, image) in enumerate(self.imageIDs, start=1):
             key = image[0]
             ext = image[1]
             # should be safe to save & open as .mp4
-            if ext == '.gifv':
+            if ext.endswith(('.gifv', 'gif')):
                 ext = '.mp4'
                 # image_url, ext = get_gifv_info(image_url, key, ext)
                 # print('img_url: %s \next: %s' % (image_url, ext))
@@ -237,12 +241,15 @@ class ImgurDownloader:
             dl, skp = self.direct_download(image_url, path)
             downloaded += dl
             skipped += skipped
+            if dl != 0:
+                final_filenames.append(filename)
 
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
             fn()
 
-        return downloaded, skipped
+        # return downloaded, skipped, final_filenames
+        return final_filenames, skipped
 
     def direct_download(self, image_url, path):
         """download data from url and save to path

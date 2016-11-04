@@ -18,6 +18,7 @@ def test():
     url5 = 'http://i.imgur.com/SnkkAVU.png' # DIRECT IMAGE LINK, machines 4 colors - direct link, single img
     url6 = 'http://imgur.com/a/kfPrr' # DNE SINGLE IMAGE ALBUM, man and dog
     url7 = 'http://i.imgur.com/A61SaA1.gifv' # .GIFV FILE, star wars
+    url7_2 = 'http://imgur.com/zvATqgs'  # .GIFV FILE, tron
     url_dne = 'http://i.imgur.com/removed.png' # DIRECT IMAGE LINK, imgur link to dne image
     url8 = 'http://imgur.com/a/uOOju#6' # ALBUM, bikes
     url9 = 'http://imgur.com/r/awwnime/YldNww8' # /r/Awwnime LINK, snake girl
@@ -29,9 +30,9 @@ def test():
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
     rand_name = str(int(time.time()))
     print(dir1)
-    print(imguralbum.ImgurDownloader(url1, dir1, file_name=rand_name, debug=True).save_images())
+    print(imguralbum.ImgurDownloader(url1, dir1, file_name='url1', debug=True).save_images())
     print()
-    imguralbum.ImgurDownloader(url2, dir1, file_name='url2', debug=True).save_images()
+    print(imguralbum.ImgurDownloader(url2, dir1, file_name='url2', debug=True).save_images())
     print()
     imguralbum.ImgurDownloader(url3, dir1, file_name='url3', debug=True).save_images()
     print()
@@ -41,7 +42,9 @@ def test():
     print()
     imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     print()
-    print(imguralbum.ImgurDownloader(url7, dir1, file_name=rand_name, delete_dne=False, debug=True).save_images())
+    print(imguralbum.ImgurDownloader(url7, dir1, file_name='url7', delete_dne=False, debug=True).save_images())
+    print()
+    print(imguralbum.ImgurDownloader(url7_2, dir1, file_name='url7_2', delete_dne=False, debug=True).save_images())
     print()
     print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, debug=True).save_images())
     print()
@@ -52,8 +55,8 @@ def test():
     imguralbum.ImgurDownloader(url10, dir1, file_name='url10', debug=True).save_images()
     print()
     imguralbum.ImgurDownloader(url11, dir1, file_name='url11', debug=True).save_images()
-
-    imguralbum.ImgurDownloader(url12, dir1, file_name='helmetdmg', debug=True).save_images()
+    print()
+    imguralbum.ImgurDownloader(url12, dir1, file_name='url12', debug=True).save_images()
 
 def test_dne(path):
     dne_file = open(os.path.join(os.getcwd(), 'imgur-dne.png'), 'rb')
