@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-
 """
 imguralbum.py - Download a whole imgur album in one go.
 
@@ -11,7 +10,6 @@ to download Imgur albums.
 MIT License
 Copyright Alex Gisby <alex@solution10.com>
 """
-
 
 import sys
 import re
@@ -27,14 +25,17 @@ help_message = """
 Quickly and easily download an album from Imgur.
 
 Format:
-    $ python imguralbum.py [album URL] [destination folder]
+    $ python imguralbum.py [album URL] [destination folder | --use-ids]
 
 Example:
     $ python imguralbum.py http://imgur.com/a/uOOju#6 /Users/alex/images
 
 If you omit the dest folder name, the utility will create one with the same name
-as the album
+as the album.
 (for example for http://imgur.com/a/uOOju it'll create uOOju/ in the cwd)
+
+If you will use --use-ids option instead of folder name, your download folder
+will be named after album id.
 """
 
 
@@ -148,7 +149,9 @@ class ImgurAlbumDownloader:
         And if the folder doesn't exist, it'll try and create it.
         """
         # Try and create the album folder:
-        if foldername:
+        if foldername == "use_ids":
+            albumFolder = self.album_title = self.album_key
+        elif foldername:
             albumFolder = foldername
         elif self.album_title is None or self.album_title is "":
             print("Album has no name, it will be named after ID contained in album URL.\n")
@@ -221,8 +224,12 @@ if __name__ == '__main__':
         downloader.on_complete(all_done)
 
         # Work out if we have a foldername or not:
+        # Not pretty but its only one arg, no need for argparse
         if len(args) == 3:
-            albumFolder = args[2]
+            if args[2] == "--use-ids":
+                albumFolder = "use_ids"
+            elif args[2]:
+                albumFolder = args[2]
         else:
             albumFolder = False
 
