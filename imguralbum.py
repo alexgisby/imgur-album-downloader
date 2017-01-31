@@ -53,7 +53,7 @@ class ImgurAlbumDownloader:
         self.complete_callbacks = []
 
         # Check the URL is actually imgur:
-        match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery)/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
+        match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery|r/[^/]+)/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
         if not match:
             raise ImgurAlbumException("URL must be a valid Imgur Album")
 
@@ -76,7 +76,9 @@ class ImgurAlbumDownloader:
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
         self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
-        
+
+        self.albumTitle = re.findall('\<h1[^>]*class="[^"]*post-title[^"]*[^>]*\>([^<]*)\</h1\>', html)
+
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
@@ -182,7 +184,7 @@ if __name__ == '__main__':
 
         for i in downloader.list_extensions():
             print(("Found {0} files with {1} extension".format(i[1],i[0])))
-  
+
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
@@ -198,6 +200,8 @@ if __name__ == '__main__':
         # Work out if we have a foldername or not:
         if len(args) == 3:
             albumFolder = args[2]
+        elif len(downloader.albumTitle) > 0 and len(downloader.albumTitle[0].strip()) > 0:
+            albumFolder = downloader.albumTitle[0].strip() + ' - Imgur Album ' + downloader.album_key
         else:
             albumFolder = False
 
