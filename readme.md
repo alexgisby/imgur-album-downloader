@@ -50,6 +50,8 @@ MIT
 
 ## Credits
 
-Originally written by [Alex Gisby](https://github.com/alexgisby) ([@alexgisby](http://twitter.com/alexgisby))
+Written and modified by [Bikram Singh aka boywigh](https://github.com/boywigh/) ([@boywigh](http://twitter.com/boywigh) 
+
+Forked from [Alex Gisby](https://github.com/alexgisby) ([@alexgisby](http://twitter.com/alexgisby))
 
 With [Contributions from these amazing people!](https://github.com/alexgisby/imgur-album-downloader/graphs/contributors)
