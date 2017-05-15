@@ -135,7 +135,7 @@ class ImgurDownloader:
             print('album_title: ' + self.album_title)  # debug
 
         # get section from html that contains image ID(s) and file extensions of each ID
-        search = re.search('(_item:.*?};)', html, flags=re.DOTALL)
+        search = re.search('(item:.*?};)', html, flags=re.DOTALL)
         if search:
             # this'll fix those albums with one picture
             if '"count"' in search.group(0):
@@ -144,6 +144,8 @@ class ImgurDownloader:
             # removes the 1st element in imageIDs since this'll be the main_key if this link has more than 1 img
             if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.main_key:
                 self.imageIDs.remove(self.imageIDs[0])
+        else:
+            raise Exception("Failed to find regex match in html")
 
         if self.debug:
             print("imageIDs count: %s" % str(len(self.imageIDs)))  # debug
