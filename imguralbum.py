@@ -20,7 +20,6 @@ from collections import Counter
 from traceback import format_exc
 import platform
 
-
 help_message = """
 Quickly and easily download an album from Imgur.
 
@@ -88,7 +87,7 @@ class ImgurAlbumDownloader:
         html = html.splitlines()
         for line in html:
             line=line.lstrip()
-            if line.startswith('_item:') or line.startswith('images'):
+            if line.startswith('_item:') or line.startswith('images') or line.startswith('image'):
                 self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', line)
                 break
 
