@@ -304,7 +304,7 @@ class ImgurDownloader:
         return True if data == dne_data else False
 
 
-if __name__ == '__main__':
+def main():
     args = sys.argv
 
     if len(args) == 1:
@@ -356,3 +356,7 @@ if __name__ == '__main__':
         print("=============")
         print(__doc__)
         exit(1)
+
+
+if __name__ == '__main__':
+    main()
