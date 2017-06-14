@@ -26,4 +26,5 @@ setup(
     ],
     keywords='imgur downloader',
     zip_safe=False,
+    entry_points={'console_scripts': ['imgurdownloader=imgurdownloader.__main__:main']}
 )
