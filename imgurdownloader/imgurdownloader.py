@@ -26,10 +26,10 @@ __doc__ = """
 Quickly and easily download images from Imgur.
 
 Format:
-    $ python3 imgurdownloader.py [album URL] [destination folder]
+    $ imgurdownloader [album URL] [destination folder]
 
 Example:
-    $ python3 imgurdownloader.py http://imgur.com/a/uOOju#6 /Users/alex/images
+    $ imgurdownloader http://imgur.com/a/uOOju#6 /Users/alex/images
 
 If you omit the dest folder name, the utility will create one with the same name
 as the album
