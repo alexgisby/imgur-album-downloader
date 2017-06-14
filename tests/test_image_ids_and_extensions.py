@@ -1,6 +1,6 @@
 import pytest
 import os
-from ..imgurdownloader import ImgurDownloader
+from imgurdownloader import ImgurDownloader
 
 def test_single_img():
     imgur = ImgurDownloader('http://imgur.com/SnkkAVU')
