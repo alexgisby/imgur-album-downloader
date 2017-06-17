@@ -47,6 +47,7 @@ Fix
 Change
 ~~~~~~
 
+- Change files to pass flake8 test. [rachmadaniHaryono]
 - Use Restructured text instead of Markdown file for readme.
 - All .gif files are saved as .mp4, [James T]
 - List of final downloaded filenames returned instead of number of successful downloads in save_images method. [James T]
