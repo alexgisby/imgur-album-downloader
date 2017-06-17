@@ -1,6 +1,6 @@
-import pytest
 import os
 from imgurdownloader import ImgurDownloader
+
 
 def test_single_img():
     imgur = ImgurDownloader('http://imgur.com/SnkkAVU')
@@ -31,7 +31,7 @@ def test_single_img_from_subreddit():
     imgur = ImgurDownloader('http://imgur.com/r/awwnime/YldNww8')
     id = [('YldNww8', '.png')]
     assert(id == imgur.imageIDs)
-    
+
 
 def test_album_multi_img_with_gifv():
     imgur = ImgurDownloader('http://imgur.com/a/SVq41')
