@@ -11,21 +11,20 @@ import time
 
 
 def test():
-    url1 = 'http://imgur.com/a/SVq41' # ALBUM, bird comic
-    url2 = 'http://imgur.com/SnkkAVU' # SINGLE IMAGE, machines 4 colors
-    url3 = 'http://i.imgur.com/H37kxPH.jpg' # DIRECT IMAGE LINK, dog in vest - direct link, single img
-    url4 = 'http://imgur.com/gallery/40Uow1Q' # SINGLE IMAGE GALLERY, poopy butthole - single img
-    url5 = 'http://i.imgur.com/SnkkAVU.png' # DIRECT IMAGE LINK, machines 4 colors - direct link, single img
-    url6 = 'http://imgur.com/a/kfPrr' # DNE SINGLE IMAGE ALBUM, man and dog
-    url7 = 'http://i.imgur.com/A61SaA1.gifv' # .GIFV FILE, star wars
+    url1 = 'http://imgur.com/a/SVq41'  # ALBUM, bird comic
+    url2 = 'http://imgur.com/SnkkAVU'  # SINGLE IMAGE, machines 4 colors
+    url3 = 'http://i.imgur.com/H37kxPH.jpg'  # DIRECT IMAGE LINK, dog in vest - direct link, single img  # NOQA
+    url4 = 'http://imgur.com/gallery/40Uow1Q'  # SINGLE IMAGE GALLERY, poopy butthole - single img
+    url5 = 'http://i.imgur.com/SnkkAVU.png'  # DIRECT IMAGE LINK, machines 4 colors - direct link, single img  # NOQA
+    url6 = 'http://imgur.com/a/kfPrr'  # DNE SINGLE IMAGE ALBUM, man and dog
+    url7 = 'http://i.imgur.com/A61SaA1.gifv'  # .GIFV FILE, star wars
     url7_2 = 'http://imgur.com/zvATqgs'  # .GIFV FILE, tron
-    url_dne = 'http://i.imgur.com/removed.png' # DIRECT IMAGE LINK, imgur link to dne image
-    url8 = 'http://imgur.com/a/uOOju#6' # ALBUM, bikes
-    url9 = 'http://imgur.com/r/awwnime/YldNww8' # /r/Awwnime LINK, snake girl
-    url10 = 'http://imgur.com/r/awwnime/W7N6A' # /r/Awwnime ALBUM LINK, anime girl HTTP ERROR 404
-    url11 = 'http://imgur.com/r/awwnime/poDoh' # /r/Awwnime ALBUM LINK, anime girl w/ bow
+    url_dne = 'http://i.imgur.com/removed.png'  # DIRECT IMAGE LINK, imgur link to dne image
+    url8 = 'http://imgur.com/a/uOOju#6'  # ALBUM, bikes
+    url9 = 'http://imgur.com/r/awwnime/YldNww8'  # /r/Awwnime LINK, snake girl
+    url10 = 'http://imgur.com/r/awwnime/W7N6A'  # /r/Awwnime ALBUM LINK, anime girl HTTP ERROR 404
+    url11 = 'http://imgur.com/r/awwnime/poDoh'  # /r/Awwnime ALBUM LINK, anime girl w/ bow
     url12 = 'http://imgur.com/gallery/6rnpOQS'  # ALBUM SINGLE IMAGE, damaged helmet
-
 
     dir1 = os.path.join(os.getcwd(), 'my-downloads')
     rand_name = str(int(time.time()))
@@ -42,9 +41,9 @@ def test():
     print()
     imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
     print()
-    print(imguralbum.ImgurDownloader(url7, dir1, file_name='url7', delete_dne=False, debug=True).save_images())
+    print(imguralbum.ImgurDownloader(url7, dir1, file_name='url7', delete_dne=False, debug=True).save_images())  # NOQA
     print()
-    print(imguralbum.ImgurDownloader(url7_2, dir1, file_name='url7_2', delete_dne=False, debug=True).save_images())
+    print(imguralbum.ImgurDownloader(url7_2, dir1, file_name='url7_2', delete_dne=False, debug=True).save_images())  # NOQA
     print()
     print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, debug=True).save_images())
     print()
@@ -57,6 +56,7 @@ def test():
     imguralbum.ImgurDownloader(url11, dir1, file_name='url11', debug=True).save_images()
     print()
     imguralbum.ImgurDownloader(url12, dir1, file_name='url12', debug=True).save_images()
+
 
 def test_dne(path):
     dne_file = open(os.path.join(os.getcwd(), 'imgur-dne.png'), 'rb')
@@ -77,7 +77,7 @@ def test_dne(path):
             ext_index = path.find(e)
             if ext_index != -1:
                 break
-        if ext_index == -1: # no ext found in path
+        if ext_index == -1:  # no ext found in path
             return path
         return path[:ext_index]
 
@@ -89,6 +89,7 @@ def test_dne(path):
             # os.remove(path)
         else:
             print('not dne img')
+
 
 if __name__ == '__main__':
     test()

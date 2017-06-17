@@ -12,15 +12,16 @@ MIT License
 Copyright Alex Gisby <alex@solution10.com>
 """
 
-import sys
-import re
-import urllib.request, urllib.parse, urllib.error
-from urllib.error import HTTPError
-import os
-import math
-import time
 from collections import Counter
+from urllib.error import HTTPError
 import logging
+import math
+import os
+import re
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 
 __doc__ = """
 Quickly and easily download images from Imgur.
@@ -84,7 +85,7 @@ class ImgurDownloader:
 
         # Check the URL is actually imgur:
         match = re.match(
-            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a|gallery|r)?/?([\w_]*)/?([\w_]*)(#[0-9]+)?(.\w*)?",
+            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a|gallery|r)?/?([\w_]*)/?([\w_]*)(#[0-9]+)?(.\w*)?", # NOQA
             imgur_url)
         if not match:
             raise ImgurException("URL must be a valid Imgur Album")
@@ -140,8 +141,11 @@ class ImgurDownloader:
             # this'll fix those albums with one picture
             if '"count"' in search.group(0):
                 search = re.search('"images".*?]', search.group(0), flags=re.DOTALL)
-            self.imageIDs = re.findall('.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', search.group(0))
-            # removes the 1st element in imageIDs since this'll be the main_key if this link has more than 1 img
+            self.imageIDs = re.findall(
+                '.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?',
+                search.group(0))
+            # removes the 1st element in imageIDs
+            # since this'll be the main_key if this link has more than 1 img
             if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.main_key:
                 self.imageIDs.remove(self.imageIDs[0])
         else:
@@ -295,7 +299,10 @@ class ImgurDownloader:
         return dl, skp
 
     def is_imgur_dne_image(self, img_path):
-        """takes full image path & checks if bytes are equal to that of imgur does not exist image"""
+        """takes full image path & checks it.
+
+        It will check if bytes are equal to that of imgur does not exist image.
+        """
         dne_img = os.path.join(self.dir_root, 'imgur-dne.png')  # edit location if needed
         with open(dne_img, 'rb') as f:
             dne_data = bytearray(f.read())
@@ -321,21 +328,17 @@ def main():
         for i in downloader.list_extensions():
             print(("Found {0} files with {1} extension".format(i[1], i[0])))
 
-
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
             print(("Downloading Image %d" % index))
             print(("    %s >> %s" % (url, dest)))
 
-
         downloader.on_image_download(print_image_progress)
-
 
         # Called when the downloads are all done.
         def all_done():
             print("")
             print("Done!")
-
 
         downloader.on_complete(all_done)
 
