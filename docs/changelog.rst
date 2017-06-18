@@ -47,6 +47,7 @@ Fix
 Change
 ~~~~~~
 
+- Use click to parse the argument. [rachmadaniHaryono]
 - Change files to pass flake8 test. [rachmadaniHaryono]
 - Use Restructured text instead of Markdown file for readme.
 - All .gif files are saved as .mp4, [James T]

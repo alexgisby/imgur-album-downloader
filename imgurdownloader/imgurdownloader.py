@@ -23,6 +23,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import click
+
 __doc__ = """
 Quickly and easily download images from Imgur.
 
@@ -311,17 +313,19 @@ class ImgurDownloader:
         return True if data == dne_data else False
 
 
-def main():
-    args = sys.argv
-
-    if len(args) == 1:
+@click.command()
+@click.argument('url', nargs=1, required=False)
+@click.argument('destination_folder', nargs=1, required=False)
+def main(url, destination_folder):
+    """Quickly and easily download images from Imgur."""
+    if not url:
         # Print out the help message and exit:
         print(__doc__)
         exit()
 
     try:
         # Fire up the class:
-        downloader = ImgurDownloader(args[1])
+        downloader = ImgurDownloader(url)
 
         print(("Found {0} images in album".format(downloader.num_images())))
 
@@ -343,7 +347,7 @@ def main():
         downloader.on_complete(all_done)
 
         # Work out if we have a foldername or not:
-        if len(args) == 3:
+        if destination_folder:
             albumFolder = args[2]
         else:
             albumFolder = False
