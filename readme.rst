@@ -25,6 +25,7 @@ jtara1 Fork - Features
 
     We don't have a blue backdrop, just tint the whole photo blue. (SnkkAVU).png
 
+- Add `--print-only` option to print the direct link of the imgur url.
 - Prevents downloading of imgur does not exist image if it is encountered.
   It is implemented by comparing the bytes of the HTTP request
   to that of a local imgur dne file in program.
@@ -113,19 +114,26 @@ Command Line Usage
 
 .. code:: bash
 
- $ imguralbum [album URL] [folder to save to]
+ $ imgurdownloader [album URL] [folder to save to]
 
 Download all images from an album into the folder /Users/alex/images/downloaded
 
 .. code:: bash
 
- $ imguralbum http://imgur.com/a/uOOju /Users/alex/images/downloaded
+ $ imgurdownloader http://imgur.com/a/uOOju /Users/alex/images/downloaded
 
 Downloads all images and puts them into an album in the current directory called "uOOju"
 
 .. code:: bash
 
- $ imguralbum http://imgur.com/a/uOOju
+ $ imgurdownloader http://imgur.com/a/uOOju
+
+
+It can also be used with downloader such as `wget` using `--print-only` option.
+
+.. code:: bash
+
+ imgurdownloader --print-only http://imgur.com/a/SVq41 | xargs wget
 
 
 Class Usage
