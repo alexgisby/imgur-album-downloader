@@ -85,7 +85,7 @@ class ImgurDownloader:
 
         # Check the URL is actually imgur:
         match = re.match(
-            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a|gallery|r)?/?([\w_]*)/?([\w_]*)(#[0-9]+)?(.\w*)?", # NOQA
+            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a|gallery|r)?/?(\w*)/?(\w*)(#[0-9]+)?(.\w*)?",  # NOQA
             imgur_url)
         if not match:
             raise ImgurException("URL must be a valid Imgur Album")
