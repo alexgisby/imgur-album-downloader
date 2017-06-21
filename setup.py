@@ -8,7 +8,7 @@ try:
     long_description = open("readme.rst").read()
 except IOError:
     long_description = description
-install_requires=(
+install_requires = (
     'click>=6.7',
 )
 setup(
