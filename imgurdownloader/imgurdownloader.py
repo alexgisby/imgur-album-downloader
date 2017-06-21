@@ -109,6 +109,8 @@ class ImgurDownloader:
         if domain_prefix and image_extension:
             self.album_title = self.main_key if file_name == '' else file_name
             self.imageIDs = [(self.main_key, image_extension)]
+            # copy imageIDs to json_imageIDs for direct image link
+            self.json_imageIDs = self.imageIDs
             return
 
         try:
@@ -137,13 +139,8 @@ class ImgurDownloader:
         if self.debug:
             print('album_title: ' + self.album_title)  # debug
 
-        image_ids = self._init_image_ids_with_regex(html=html)
-        if image_ids:
-            self.imageIDs = image_ids
-
-        json_image_ids = list(self._init_image_ids_with_json(html=html))
-        if json_image_ids:
-            self.json_imageIDs = json_image_ids
+        self.imageIDs = self._init_image_ids_with_regex(html=html)
+        self.json_imageIDs = list(self._init_image_ids_with_json(html=html))
 
         if self.debug:
             print("imageIDs count: %s" % str(len(self.imageIDs)))  # debug
@@ -159,31 +156,28 @@ class ImgurDownloader:
         item: <java dict>\n};
         """
         image_ids = None
-        search_failed = False
         search = re.search('(item:.*?};)', html, flags=re.DOTALL)
-        if search:
-            try:
-                search = search.group().replace('\n', '', ).split(':', 1)[1].rsplit('}', 1)[0]
-                json_search = json.loads(search)
-                if 'album_images' in json_search:
-                    img_dicts = json_search['album_images']['images']
-                    for img_dict in img_dicts:
-                        # ext can be either '.jpg' or '.jpg?1'
-                        ext = img_dict['ext']
-                        ext = ext.split('?')[0] if '?' in ext else ext
-                        yield (img_dict['hash'], ext)
-                elif 'hash' in json_search:
-                    # safe guard if any '?' in ext
-                    ext = json_search['ext']
-                    ext = ext.split('?')[0] if '?' in ext else ext
-                    return (json_search['hash'], json_search['ext'])
-                else:
-                    self.log.debug('Unknown json search key: {}'.format(json_search))
-            except Exception as e:
-                self.log.debug('JSON parse failed: {}'.format(e))
-                search_failed = True
-        if not search or search_failed:
+        if not search:
             raise Exception("Failed to find regex match in html")
+        try:
+            search = search.group().replace('\n', '', ).split(':', 1)[1].rsplit('}', 1)[0]
+            json_search = json.loads(search)
+            if 'album_images' in json_search:
+                img_dicts = json_search['album_images']['images']
+                for img_dict in img_dicts:
+                    # ext can be either '.jpg' or '.jpg?1'
+                    ext = img_dict['ext']
+                    ext = ext.split('?')[0] if '?' in ext else ext
+                    yield (img_dict['hash'], ext)
+            elif 'hash' in json_search:
+                # safe guard if any '?' in ext
+                ext = json_search['ext']
+                ext = ext.split('?')[0] if '?' in ext else ext
+                yield (json_search['hash'], ext)
+            else:
+                self.log.debug('Unknown json search key: {}'.format(json_search))
+        except Exception as e:
+            raise Exception('JSON parse failed: {}'.format(e))
         return image_ids
 
     def _init_image_ids_with_regex(self, html):
