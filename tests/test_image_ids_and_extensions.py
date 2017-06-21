@@ -2,6 +2,17 @@ import os
 from imgurdownloader import ImgurDownloader
 
 
+all_imgur_url_possibilities = [
+    "http://imgur.com/FVRUGe2",
+    "http://imgur.com/FVRUGe2.jpg",
+    "http://imgur.com/gallery/LHCvGPA",
+    "http://imgur.com/r/awwnime/W7N6A",
+    "http://i.imgur.com/j9W9tSi.jpg",
+    "http://imgur.com/a/SVq41",
+    "http://i.imgur.com/A61SaA1.gifv",
+]
+
+
 def test_single_img():
     imgur = ImgurDownloader('http://imgur.com/SnkkAVU')
     id = [('SnkkAVU', '.png')]
