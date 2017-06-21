@@ -19,7 +19,6 @@ import logging
 import math
 import os
 import re
-import sys
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -155,7 +154,7 @@ class ImgurDownloader:
             self.cnt[i[1]] += 1
 
     def _init_image_ids_with_json(self, html):
-        """get section from html that contains image ID(s) and file extensions of each ID with json."""
+        """get html section that contains image ID(s) and file extensions of each ID with json."""
         """Format of the search variable.
         item: <java dict>\n};
         """
@@ -396,7 +395,7 @@ def main(url, destination_folder, print_only=False):
 
         # Work out if we have a foldername or not:
         if destination_folder:
-            albumFolder = args[2]
+            albumFolder = destination_folder
         else:
             albumFolder = False
 
