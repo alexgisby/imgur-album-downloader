@@ -14,6 +14,7 @@ Copyright Alex Gisby <alex@solution10.com>
 
 from collections import Counter
 from urllib.error import HTTPError
+import json
 import logging
 import math
 import os
@@ -137,21 +138,13 @@ class ImgurDownloader:
         if self.debug:
             print('album_title: ' + self.album_title)  # debug
 
-        # get section from html that contains image ID(s) and file extensions of each ID
-        search = re.search('(item:.*?};)', html, flags=re.DOTALL)
-        if search:
-            # this'll fix those albums with one picture
-            if '"count"' in search.group(0):
-                search = re.search('"images".*?]', search.group(0), flags=re.DOTALL)
-            self.imageIDs = re.findall(
-                '.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?',
-                search.group(0))
-            # removes the 1st element in imageIDs
-            # since this'll be the main_key if this link has more than 1 img
-            if len(self.imageIDs) > 1 and self.imageIDs[0][0] == self.main_key:
-                self.imageIDs.remove(self.imageIDs[0])
-        else:
-            raise Exception("Failed to find regex match in html")
+        image_ids = self._init_image_ids_with_regex(html=html)
+        if image_ids:
+            self.imageIDs = image_ids
+
+        json_image_ids = list(self._init_image_ids_with_json(html=html))
+        if json_image_ids:
+            self.json_imageIDs = json_image_ids
 
         if self.debug:
             print("imageIDs count: %s" % str(len(self.imageIDs)))  # debug
@@ -160,6 +153,51 @@ class ImgurDownloader:
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
+
+    def _init_image_ids_with_json(self, html):
+        """get section from html that contains image ID(s) and file extensions of each ID with json."""
+        """Format of the search variable.
+        item: <java dict>\n};
+        """
+        image_ids = None
+        search_failed = False
+        search = re.search('(item:.*?};)', html, flags=re.DOTALL)
+        if search:
+            try:
+                search = search.group().replace('\n', '', ).split(':', 1)[1].rsplit('}', 1)[0]
+                json_search = json.loads(search)
+                img_dicts = json_search['album_images']['images']
+                for img_dict in img_dicts:
+                    # ext can be either '.jpg' or '.jpg?1'
+                    ext = \
+                        img_dict['ext'].split('?')[0] \
+                        if '?' in img_dict['ext'] else img_dict['ext']
+                    yield (img_dict['hash'], ext)
+            except Exception as e:
+                self.log.debug('JSON parse failed: {}'.format(e))
+                search_failed = True
+        if not search or search_failed:
+            raise Exception("Failed to find regex match in html")
+        return image_ids
+
+    def _init_image_ids_with_regex(self, html):
+        """get section from html that contains image ID(s) and file extensions of each ID."""
+        image_ids = None
+        search = re.search('(item:.*?};)', html, flags=re.DOTALL)
+        if search:
+            # this'll fix those albums with one picture
+            if '"count"' in search.group(0):
+                search = re.search('"images".*?]', search.group(0), flags=re.DOTALL)
+            image_ids = re.findall(
+                '.*?"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?',
+                search.group(0))
+            # removes the 1st element in imageIDs
+            # since this'll be the main_key if this link has more than 1 img
+            if len(image_ids) > 1 and image_ids[0][0] == self.main_key:
+                image_ids.remove(image_ids[0])
+        else:
+            raise Exception("Failed to find regex match in html")
+        return image_ids
 
     def num_images(self):
         """
@@ -314,9 +352,11 @@ class ImgurDownloader:
 
 
 @click.command()
+@click.option(
+    '--print-only', default=False, is_flag=True, help="Print download link only, no download.")
 @click.argument('url', nargs=1, required=False)
 @click.argument('destination_folder', nargs=1, required=False)
-def main(url, destination_folder):
+def main(url, destination_folder, print_only=False):
     """Quickly and easily download images from Imgur."""
     if not url:
         # Print out the help message and exit:
@@ -327,10 +367,11 @@ def main(url, destination_folder):
         # Fire up the class:
         downloader = ImgurDownloader(url)
 
-        print(("Found {0} images in album".format(downloader.num_images())))
+        if not print_only:
+            print(("Found {0} images in album".format(downloader.num_images())))
 
-        for i in downloader.list_extensions():
-            print(("Found {0} files with {1} extension".format(i[1], i[0])))
+            for i in downloader.list_extensions():
+                print(("Found {0} files with {1} extension".format(i[1], i[0])))
 
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
@@ -352,9 +393,13 @@ def main(url, destination_folder):
         else:
             albumFolder = False
 
-        # Enough talk, let's save!
-        downloader.save_images(albumFolder)
-        exit()
+        if not print_only:
+            # Enough talk, let's save!
+            downloader.save_images(albumFolder)
+        else:
+            for img_id, ext in downloader.json_imageIDs:
+                print('https://i.imgur.com/{}{}'.format(img_id, ext))
+        exit()  # NOTE: may not be needed
 
     except ImgurException as e:
         print(("Error: " + e.msg))

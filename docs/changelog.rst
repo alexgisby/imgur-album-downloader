@@ -7,6 +7,7 @@ Changelog
 New
 ~~~
 
+- Add `print only` feature. [rachmadaniHaryono]
 - Add `__init__.py` for tests folder so unit tests can run properly using pytest. [jtara1]
 - Add unit tests, now tests most common imgur links. [jtara1]
 - Add test py file for pytest. [jtara1]
