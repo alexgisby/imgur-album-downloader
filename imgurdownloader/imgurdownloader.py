@@ -166,13 +166,20 @@ class ImgurDownloader:
             try:
                 search = search.group().replace('\n', '', ).split(':', 1)[1].rsplit('}', 1)[0]
                 json_search = json.loads(search)
-                img_dicts = json_search['album_images']['images']
-                for img_dict in img_dicts:
-                    # ext can be either '.jpg' or '.jpg?1'
-                    ext = \
-                        img_dict['ext'].split('?')[0] \
-                        if '?' in img_dict['ext'] else img_dict['ext']
-                    yield (img_dict['hash'], ext)
+                if 'album_images' in json_search:
+                    img_dicts = json_search['album_images']['images']
+                    for img_dict in img_dicts:
+                        # ext can be either '.jpg' or '.jpg?1'
+                        ext = img_dict['ext']
+                        ext = ext.split('?')[0] if '?' in ext else ext
+                        yield (img_dict['hash'], ext)
+                elif 'hash' in json_search:
+                    # safe guard if any '?' in ext
+                    ext = json_search['ext']
+                    ext = ext.split('?')[0] if '?' in ext else ext
+                    return (json_search['hash'], json_search['ext'])
+                else:
+                    self.log.debug('Unknown json search key: {}'.format(json_search))
             except Exception as e:
                 self.log.debug('JSON parse failed: {}'.format(e))
                 search_failed = True
