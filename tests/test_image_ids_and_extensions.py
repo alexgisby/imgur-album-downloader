@@ -16,30 +16,33 @@ all_imgur_url_possibilities = [
 ]
 
 
-@pytest.mark.parametrize("url, id", [
-    ("http://imgur.com/SnkkAVU", [('SnkkAVU', '.png')]),
-    ('http://i.imgur.com/H37kxPH.jpg', [('H37kxPH', '.jpg')]),
-    ('http://imgur.com/gallery/40Uow1Q', [('40Uow1Q', '.jpg')]),
-    ('http://imgur.com/a/kfPrr', [('8sZQFxt', '.jpg')]),
-    ('http://imgur.com/r/awwnime/YldNww8', [('YldNww8', '.png')]),
-    (
-        'http://imgur.com/a/SVq41',
-        [
-            ('esSzNWQ', '.png'),
-            ('z25tnfF', '.png'),
-            ('eR27JxQ', '.png'),
-            ('tsGMdgr', '.png'),
-            ('cC0I2rs', '.png'),
-            ('SzqTvSx', '.gif')
-        ]
-    ),
-    ('http://i.imgur.com/MOvVbhc.gifv', [('MOvVbhc', '.gifv')]),
-    ('http://imgur.com/zvATqgs', [('zvATqgs', '.gif')]),
-    ('http://imgur.com/A61SaA1', [('A61SaA1', '.gif')]),
-])
-def test_image_ids_and_extensions(url, id):
+@pytest.mark.parametrize(
+    "url, exp_id", [
+        ("http://imgur.com/SnkkAVU", [('SnkkAVU', '.png')]),
+        ('http://i.imgur.com/H37kxPH.jpg', [('H37kxPH', '.jpg')]),
+        ('http://imgur.com/gallery/40Uow1Q', [('40Uow1Q', '.jpg')]),
+        ('http://imgur.com/a/kfPrr', [('8sZQFxt', '.jpg')]),
+        ('http://imgur.com/r/awwnime/YldNww8', [('YldNww8', '.png')]),
+        (
+            'http://imgur.com/a/SVq41',
+            [
+                ('esSzNWQ', '.png'),
+                ('z25tnfF', '.png'),
+                ('eR27JxQ', '.png'),
+                ('tsGMdgr', '.png'),
+                ('cC0I2rs', '.png'),
+                ('SzqTvSx', '.gif')
+            ]
+        ),
+        ('http://i.imgur.com/MOvVbhc.gifv', [('MOvVbhc', '.gifv')]),
+        ('http://imgur.com/zvATqgs', [('zvATqgs', '.gif')]),
+        ('http://imgur.com/A61SaA1', [('A61SaA1', '.gif')]),
+    ],
+)
+def test_image_ids_and_extensions(url, exp_id):
     imgur = ImgurDownloader(url)
-    assert(id == imgur.imageIDs)
+    assert(exp_id == imgur.json_imageIDs)
+    assert(exp_id == imgur.imageIDs)
 
 
 def test_gifv_gif_direct_link():
