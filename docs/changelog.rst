@@ -7,6 +7,7 @@ Changelog
 New
 ~~~
 
+- Add `print only` feature. [rachmadaniHaryono]
 - Add `__init__.py` for tests folder so unit tests can run properly using pytest. [jtara1]
 - Add unit tests, now tests most common imgur links. [jtara1]
 - Add test py file for pytest. [jtara1]
@@ -47,6 +48,7 @@ Fix
 Change
 ~~~~~~
 
+- Use click to parse the argument. [rachmadaniHaryono]
 - Change files to pass flake8 test. [rachmadaniHaryono]
 - Use Restructured text instead of Markdown file for readme.
 - All .gif files are saved as .mp4, [James T]
