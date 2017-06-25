@@ -118,7 +118,10 @@ class ImgurDownloader:
             response_code = self.response.getcode()
         except Exception as e:
             self.response = False
-            response_code = e.code
+            try:
+                response_code = e.code
+            except AttributeError:
+                raise e
 
         if not self.response or self.response.getcode() != 200:
             raise ImgurException("[ImgurDownloader] HTTP Response Code %d" % response_code)
