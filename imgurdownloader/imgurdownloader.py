@@ -14,6 +14,7 @@ Copyright Alex Gisby <alex@solution10.com>
 
 from collections import Counter
 from urllib.error import HTTPError
+from urllib.parse import urlparse
 import json
 import logging
 import math
@@ -113,6 +114,8 @@ class ImgurDownloader:
             self.json_imageIDs = self.imageIDs
             return
 
+        imgur_url = self.get_all_format_url(imgur_url)
+        # e.g.: imgur.com/a/p5wLR -> imgur.com/a/p5wLR/all
         try:
             self.response = urllib.request.urlopen(url=imgur_url)
             response_code = self.response.getcode()
@@ -152,6 +155,17 @@ class ImgurDownloader:
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
+
+    @staticmethod
+    def get_all_format_url(album_url):
+        """get `all` format url from album url."""
+        parsed_url = urlparse(album_url)
+        if not parsed_url.path.startswith('/a/'):
+            return album_url
+        album_id = parsed_url.path.split('/')[2]
+        # e.g.:  ['', 'a', 'p5wLR']
+        new_path = '/a/{}/all'.format(album_id)
+        return parsed_url._replace(path=new_path).geturl()
 
     def _init_image_ids_with_json(self, html):
         """get html section that contains image ID(s) and file extensions of each ID with json."""
