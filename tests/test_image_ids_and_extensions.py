@@ -20,7 +20,7 @@ all_imgur_url_possibilities = [
     "url, exp_id", [
         ("http://imgur.com/SnkkAVU", [('SnkkAVU', '.png')]),
         ('http://i.imgur.com/H37kxPH.jpg', [('H37kxPH', '.jpg')]),
-        ('http://imgur.com/gallery/40Uow1Q', [('40Uow1Q', '.jpg')]),
+        ('http://imgur.com/gallery/jK0fB', [('vguHPLT', '.jpg')]),
         ('http://imgur.com/a/kfPrr', [('8sZQFxt', '.jpg')]),
         ('http://imgur.com/r/awwnime/YldNww8', [('YldNww8', '.png')]),
         (

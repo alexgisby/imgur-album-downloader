@@ -160,10 +160,11 @@ class ImgurDownloader:
     def get_all_format_url(album_url):
         """get `all` format url from album url."""
         parsed_url = urlparse(album_url)
-        if not parsed_url.path.startswith('/a/'):
+        if not parsed_url.path.startswith(('/a/', '/gallery/')):
             return album_url
         album_id = parsed_url.path.split('/')[2]
         # e.g.:  ['', 'a', 'p5wLR']
+        # e.g.:  ['', 'gallery', 'p5wLR']
         new_path = '/a/{}/all'.format(album_id)
         return parsed_url._replace(path=new_path).geturl()
 
