@@ -107,7 +107,7 @@ class ImgurDownloader:
             print("main key: " + self.main_key)  # debug
 
         # handle direct image links
-        if domain_prefix and image_extension:
+        if image_extension:
             self.album_title = self.main_key if file_name == '' else file_name
             self.imageIDs = [(self.main_key, image_extension)]
             # copy imageIDs to json_imageIDs for direct image link
@@ -227,7 +227,9 @@ class ImgurDownloader:
         """
         Returns list with occurrences of extensions in descending order.
         """
-        return self.cnt.most_common()
+        if hasattr(self, "cnt"):
+            if self.cnt:
+                return self.cnt.most_common()
 
     def get_album_key(self):
         """
@@ -388,8 +390,10 @@ def main(url, destination_folder, print_only=False):
         if not print_only:
             print(("Found {0} images in album".format(downloader.num_images())))
 
-            for i in downloader.list_extensions():
-                print(("Found {0} files with {1} extension".format(i[1], i[0])))
+            exts = downloader.list_extensions()
+            if exts is not None:
+                for i in exts:
+                    print(("Found {0} files with {1} extension".format(i[1], i[0])))
 
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
