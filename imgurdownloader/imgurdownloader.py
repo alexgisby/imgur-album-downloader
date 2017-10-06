@@ -94,7 +94,7 @@ class ImgurDownloader:
             raise ImgurException("URL must be a valid Imgur Album")
 
         self.protocol = match.group(1)
-        domain_prefix = match.group(3)
+        # domain_prefix = match.group(3)
 
         imgur_link_type = match.group(4)
 
