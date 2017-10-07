@@ -270,6 +270,14 @@ class ImgurDownloader:
                 albumFolder = foldername
             else:
                 albumFolder = self.album_title
+        elif len(self.imageIDs) == 1 and foldername is not None:
+            albumFolder = foldername
+        else:
+            self.log.debug(
+                'Unexpected condition: foldername:{}|len of imageIDs:{}'.format(
+                    foldername, len(self.imageIDs)
+                )
+            )
 
         dir_save = os.path.join(self.dir_download, albumFolder)
         downloaded = skipped = 0
