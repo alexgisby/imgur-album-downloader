@@ -37,6 +37,7 @@ all_imgur_url_possibilities = [
         ('http://i.imgur.com/MOvVbhc.gifv', [('MOvVbhc', '.gifv')]),
         ('http://imgur.com/zvATqgs', [('zvATqgs', '.gif')]),
         ('http://imgur.com/A61SaA1', [('A61SaA1', '.gif')]),
+        ('https://imgur.com/gallery/opZOg', [('1t0jQov', '.jpg')])
     ],
 )
 def test_image_ids_and_extensions(url, exp_id):

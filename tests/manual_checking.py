@@ -5,7 +5,10 @@ Created on Sat Aug 13 09:40:27 2016
 @author: j
 """
 
-import imgurdownloader as imguralbum
+import sys
+import os
+sys.path.append(os.path.dirname(__file__), '..')
+import imgurdownloader.imgurdownloader as imguralbum
 import os
 import time
 
@@ -19,7 +22,7 @@ def test():
     url6 = 'http://imgur.com/a/kfPrr'  # DNE SINGLE IMAGE ALBUM, man and dog
     url7 = 'http://i.imgur.com/A61SaA1.gifv'  # .GIFV FILE, star wars
     url7_2 = 'http://imgur.com/zvATqgs'  # .GIFV FILE, tron
-    url_dne = 'http://i.imgur.com/removed.png'  # DIRECT IMAGE LINK, imgur link to dne image
+    # url_dne = 'http://i.imgur.com/removed.png'  # DIRECT IMAGE LINK, imgur link to dne image
     url8 = 'http://imgur.com/a/uOOju#6'  # ALBUM, bikes
     url9 = 'http://imgur.com/r/awwnime/YldNww8'  # /r/Awwnime LINK, snake girl
     url10 = 'http://imgur.com/r/awwnime/W7N6A'  # /r/Awwnime ALBUM LINK, anime girl HTTP ERROR 404
@@ -45,7 +48,7 @@ def test():
     print()
     print(imguralbum.ImgurDownloader(url7_2, dir1, file_name='url7_2', delete_dne=False, debug=True).save_images())  # NOQA
     print()
-    print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, debug=True).save_images())
+    # print(imguralbum.ImgurDownloader(url_dne, dir1, file_name=rand_name, debug=True).save_images())
     print()
     imguralbum.ImgurDownloader(url8, dir1, file_name='url8', debug=True).save_images()
     print()

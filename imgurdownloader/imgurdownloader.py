@@ -23,8 +23,9 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-
+import unicodedata
 import click
+
 
 __doc__ = """
 Quickly and easily download images from Imgur.
@@ -108,7 +109,8 @@ class ImgurDownloader:
 
         # handle direct image links
         if image_extension:
-            self.album_title = self.main_key if file_name == '' else file_name
+            self.album_title = self.main_key if file_name == '' \
+                else slugify(file_name)
             self.imageIDs = [(self.main_key, image_extension)]
             # copy imageIDs to json_imageIDs for direct image link
             self.json_imageIDs = self.imageIDs
@@ -141,6 +143,9 @@ class ImgurDownloader:
                 self.album_title = search.group(1) + ' (' + self.main_key + ')'
         elif file_name != '':
             self.album_title = file_name
+
+        # remove invalid filename characters
+        self.album_title = slugify(self.album_title)
 
         if self.debug:
             print('album_title: ' + self.album_title)  # debug
@@ -249,7 +254,8 @@ class ImgurDownloader:
 
     def on_complete(self, callback):
         """
-        Allows you to bind onto the end of the process, displaying any lovely messages
+        Allows you to bind onto the end of the process,
+        displaying any lovely messages
         to your users, or carrying on with the rest of the program. Whichever.
         """
         self.complete_callbacks.append(callback)
@@ -260,7 +266,8 @@ class ImgurDownloader:
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
 
-        :return: final filenames of each file successfully downloaded, numb of images skipped
+        :return: final filenames of each file successfully downloaded, numb of
+            images skipped
 
         """
         # Try and create the album folder:
@@ -304,7 +311,14 @@ class ImgurDownloader:
             for fn in self.image_callbacks:
                 fn(counter, image_url, path)
 
-            dl, skp = self.direct_download(image_url, path)
+            # download url content into file that path points to, slugifying
+            # file name of path
+            dl, skp = self.direct_download(
+                image_url,
+                os.path.join(
+                    os.path.dirname(path),
+                    slugify(os.path.basename(path))))
+
             downloaded += dl
             skipped += skipped
             if dl != 0:
@@ -323,12 +337,14 @@ class ImgurDownloader:
         """
 
         def are_files_equal(file1, file2):
-            """ given two file objects, checks to see if their bytes are equal """
-            return True if bytearray(file1.read()) == bytearray(file2.read()) else False
+            """given two file objects, checks to see if their bytes are equal"""
+            return True if bytearray(file1.read()) == bytearray(file2.read()) \
+                else False
 
         dl, skp = 0, 0
         if os.path.isfile(path):
-            raise FileExistsException('%s already exists.' % os.path.basename(path))
+            raise FileExistsException(
+                '%s already exists.' % os.path.basename(path))
         else:
             try:
                 request = urllib.request.urlopen(image_url)
@@ -369,6 +385,17 @@ class ImgurDownloader:
         with open(img_path, 'rb') as f:
             data = bytearray(f.read())
         return True if data == dne_data else False
+
+
+def slugify(value):
+    """Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    # taken from http://stackoverflow.com/a/295466
+    # with some modification
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = str(re.sub(r'[^\w\s\-.)(]', '', value.decode('ascii')).strip())
+    return value
 
 
 @click.command()
