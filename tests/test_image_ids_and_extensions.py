@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from imgurdownloader import ImgurDownloader
+from imgur_downloader import ImgurDownloader
 
 
 all_imgur_url_possibilities = [

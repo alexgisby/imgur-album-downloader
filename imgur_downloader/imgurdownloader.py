@@ -3,7 +3,7 @@
 
 
 """
-imgurdownloader.py - Download a whole imgur album in one go.
+imgur_downloader.py - Download a whole imgur album in one go.
 
 Provides both a class and a command line utility in a single script
 to download Imgur albums.
@@ -31,10 +31,10 @@ __doc__ = """
 Quickly and easily download images from Imgur.
 
 Format:
-    $ imgurdownloader [album URL] [destination folder]
+    $ imgur_downloader [album URL] [destination folder]
 
 Example:
-    $ imgurdownloader http://imgur.com/a/uOOju#6 /Users/alex/images
+    $ imgur_downloader http://imgur.com/a/uOOju#6 /Users/alex/images
 
 If you omit the dest folder name, the utility will create one with the same name
 as the album
@@ -174,7 +174,8 @@ class ImgurDownloader:
         return parsed_url._replace(path=new_path).geturl()
 
     def _init_image_ids_with_json(self, html):
-        """get html section that contains image ID(s) and file extensions of each ID with json."""
+        """get html section that contains image ID(s) and file extensions of 
+        each ID with json."""
         """Format of the search variable.
         item: <java dict>\n};
         """

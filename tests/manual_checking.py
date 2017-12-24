@@ -8,7 +8,7 @@ Created on Sat Aug 13 09:40:27 2016
 import sys
 import os
 sys.path.append(os.path.dirname(__file__), '..')
-import imgurdownloader.imgurdownloader as imguralbum
+import imgur_downloader.imgurdownloader as imguralbum
 import os
 import time
 

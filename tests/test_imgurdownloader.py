@@ -1,6 +1,6 @@
 import pytest
 
-from imgurdownloader.imgurdownloader import ImgurDownloader
+from imgur_downloader.imgurdownloader import ImgurDownloader
 
 
 @pytest.mark.parametrize(
