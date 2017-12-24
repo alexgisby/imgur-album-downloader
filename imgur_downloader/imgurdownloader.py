@@ -202,7 +202,7 @@ class ImgurDownloader:
                 self.log.debug('Unknown json search key: {}'.format(json_search))
         except Exception as e:
             raise Exception('JSON parse failed: {}'.format(e))
-        return image_ids
+        yield image_ids
 
     def _init_image_ids_with_regex(self, html):
         """get section from html that contains image ID(s) and file extensions of each ID."""
