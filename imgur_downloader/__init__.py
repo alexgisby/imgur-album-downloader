@@ -1,4 +1,4 @@
 from .imgurdownloader import ImgurDownloader  # NOQA
-__version__ = '0.1.4'
+# defining __version__ variable is pointless
 __author__ = 'Alex Gisby <alex@solution10.com>'
 __all__ = []

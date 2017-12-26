@@ -23,40 +23,8 @@ directory = dirname(abspath(__file__))
 # assumes the parent folder (repository name) is the same as the module name
 module_name = basename(directory)
 
-
-def get_version_from_init():
-    path = join(directory, module_name, '__init__.py')
-    try:
-        with open(path, 'r') as init:
-            match = re.search("__version__\s*=\s*'([\w.-]+)'", init.read())
-        return match.group(1) if match is not None else None
-    except (FileNotFoundError, OSError):
-        print('[setup.py] Note: There was no __version__ variable within the '
-              '__init__.py at {}'.format(path))
-
-# attempt to find variable module_name.__init__.__version__
-__version__ = None
-try:
-    __version__ = get_version_from_init()
-    if __version__ is None:
-        __version__ = __import__('imgur-downloader').__version__
-    else:
-        print('[setup.py] grabbed __version__ of {0} from {0}/__init__.py'
-              .format(module_name))
-except (FileExistsError, FileNotFoundError) as e:
-    print(type(e), e)
-    print('[setup.py] Note: There was no __init__.py found within {}'
-          .format(module_name))
-except ImportError as e:
-    print('[setup.py] {}'.format(e))
-
-
-# -------------- Update the following variables --------------- #
-# prioritize using __version__ in module_name.__init__ if it's there
-version = '0.0.0' if __version__ is None else __version__
 description = 'Python script/class to download an entire Imgur album in ' \
               ' one go into a folder of your choice'
-# ------------------------------------------------------------- #
 
 
 def create_setup_cfg(callback=None):
@@ -139,9 +107,6 @@ setup(use_scm_version={'root': directory},
       author='Alex Gisby',
       author_email='alex@solution10.com',
       url='https://github.com/jtara1/imgur_downloader',
-      download_url='{github_url}/archive/{version}.tar.gz' \
-      .format(github_url='https://github.com/jtara1/imgur_downloader',
-              version=version),
       keywords=['imgur', 'downloader'],
       maintainer='jtara1',  #'rachmadaniHaryon',
       install_requires=get_install_requirements(),
