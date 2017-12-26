@@ -25,17 +25,21 @@ module_name = basename(directory)
 
 
 def get_version_from_init():
-    with open(join(module_name, '__init__.py'), 'r') as init:
-        match = re.search("__version__\s*=\s*'([\w.-]+)'", init.read())
-    return match.group(1) if match is not None else None
+    path = join(directory, module_name, '__init__.py')
+    try:
+        with open(path, 'r') as init:
+            match = re.search("__version__\s*=\s*'([\w.-]+)'", init.read())
+        return match.group(1) if match is not None else None
+    except (FileNotFoundError, OSError):
+        print('[setup.py] Note: There was no __version__ variable within the '
+              '__init__.py at {}'.format(path))
 
 # attempt to find variable module_name.__init__.__version__
 __version__ = None
 try:
     __version__ = get_version_from_init()
     if __version__ is None:
-        print('[setup.py] Note: There was no __version__ variable within the '
-              '__init__.py of the {}'.format(module_name))
+        __version__ = __import__('imgur-downloader').__version__
     else:
         print('[setup.py] grabbed __version__ of {0} from {0}/__init__.py'
               .format(module_name))
@@ -43,6 +47,8 @@ except (FileExistsError, FileNotFoundError) as e:
     print(type(e), e)
     print('[setup.py] Note: There was no __init__.py found within {}'
           .format(module_name))
+except ImportError as e:
+    print('[setup.py] {}'.format(e))
 
 
 # -------------- Update the following variables --------------- #
@@ -122,9 +128,11 @@ def update_cfg_module_name():
 
 update_cfg_module_name()
 
-setup(name=module_name,
+setup(use_scm_version={'root': directory},
+      setup_requires=['setuptools_scm'],
+      name=module_name,
       packages=find_packages(),  # find all dependencies for this module
-      version=version,
+      # version=version,
       description=description,
       long_description=readme,
       license='MIT',
