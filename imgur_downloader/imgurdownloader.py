@@ -72,11 +72,12 @@ class ImgurDownloader:
 
         :rtype: None
         """
-        self.dir_root = os.path.dirname(__file__)
+        self.dir_root = os.path.dirname(os.path.abspath(__file__))
         self.dne_path = os.path.join(self.dir_root, 'imgur-dne.png')
 
         self.imgur_url = imgur_url
-        self.dir_download = dir_download  # directory to save image(s)
+        # directory to save image(s)
+        self.dir_download = os.path.abspath(dir_download)
 
         self.delete_dne = delete_dne
         self.debug = debug
@@ -100,7 +101,8 @@ class ImgurDownloader:
         imgur_link_type = match.group(4)
 
         # key is also referred to as hash in raw HTML
-        self.main_key = match.group(5) if imgur_link_type != 'r' else match.group(6)
+        self.main_key = match.group(5) \
+            if imgur_link_type != 'r' else match.group(6)
         image_extension = match.group(8)
 
         if self.debug:
@@ -129,7 +131,8 @@ class ImgurDownloader:
                 raise e
 
         if not self.response or self.response.getcode() != 200:
-            raise ImgurException("[ImgurDownloader] HTTP Response Code %d" % response_code)
+            raise ImgurException("[ImgurDownloader] HTTP Response Code %d"
+                                 % response_code)
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.read().decode('utf-8')
@@ -205,7 +208,9 @@ class ImgurDownloader:
         yield image_ids
 
     def _init_image_ids_with_regex(self, html):
-        """get section from html that contains image ID(s) and file extensions of each ID."""
+        """get section from html that contains image ID(s) and file extensions 
+        of each ID.
+        """
         image_ids = None
         search = re.search('(item:.*?};)', html, flags=re.DOTALL)
         if search:
@@ -239,16 +244,16 @@ class ImgurDownloader:
 
     def get_album_key(self):
         """
-        Returns the key of this album. Helpful if you plan on generating your own
-        folder names.
+        Returns the key of this album. Helpful if you plan on generating your 
+        own folder names.
         """
         return self.main_key
 
     def on_image_download(self, callback):
         """
-        Allows you to bind a function that will be called just before an image is
-        about to be downloaded. You'll be given the 1-indexed position of the image, it's URL
-        and it's destination file in the callback like so:
+        Allows you to bind a function that will be called just before an image
+        is about to be downloaded. You'll be given the 1-indexed position of 
+        the image, it's URL and it's destination file in the callback like so:
             my_awesome_callback(1, "http://i.imgur.com/fGWX0.jpg", "~/Downloads/1-fGWX0.jpg")
         """
         self.image_callbacks.append(callback)
@@ -261,12 +266,14 @@ class ImgurDownloader:
         """
         self.complete_callbacks.append(callback)
 
-    def save_images(self, foldername=None):
+    def save_images(self, foldername=''):
         """
         Saves the images from the album into a folder given by foldername.
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
 
+        :param foldername: string that describes the (base) name of the folder
+            in which the image(s) are saved in (does not include full path)
         :return: final filenames of each file successfully downloaded, numb of
             images skipped
 
@@ -278,14 +285,12 @@ class ImgurDownloader:
                 albumFolder = foldername
             else:
                 albumFolder = self.album_title
-        elif len(self.imageIDs) == 1 and foldername is not None:
+        elif len(self.imageIDs) == 1 and foldername:
             albumFolder = foldername
         else:
             self.log.debug(
-                'Unexpected condition: foldername:{}|len of imageIDs:{}'.format(
-                    foldername, len(self.imageIDs)
-                )
-            )
+                'Unexpected condition: foldername:{}|len of imageIDs:{}'
+                    .format(foldername, len(self.imageIDs)))
 
         dir_save = os.path.join(self.dir_download, albumFolder)
         downloaded = skipped = 0
@@ -346,7 +351,7 @@ class ImgurDownloader:
         """
 
         def are_files_equal(file1, file2):
-            """given two file objects, checks to see if their bytes are equal"""
+            """given two file objects, check to see if their bytes are equal"""
             return True if bytearray(file1.read()) == bytearray(file2.read()) \
                 else False
 
@@ -361,20 +366,26 @@ class ImgurDownloader:
 
                 # check if image did not exist and url got redirected
                 if image_url != redirect_url:
-                    self.log.debug('url, redirected_url = %s, %s' % (image_url,
-                                                                     redirect_url))
+                    self.log.debug('url, redirected_url = %s, %s'
+                                   % (image_url, redirect_url))
                     if redirect_url == 'http://imgur.com/':
-                        raise HTTPError(404, "Image redirected to non-image link",
-                                        redirect_url, None, None)
+                        raise HTTPError(
+                            404, "Image redirected to non-image link",
+                            redirect_url, None, None)
 
                 # check if image is imgur dne image before we download anything
                 if self.delete_dne:
-                    with open(self.dne_path, 'rb') as dne_file:
-                        if are_files_equal(request, dne_file):
-                            if self.debug:
-                                print('[ImgurDownloader] DNE: %s' %
-                                      path.split('/')[-1])
-                            return 0, 1
+                    try:
+                        with open(self.dne_path, 'rb') as dne_file:
+                            if are_files_equal(request, dne_file):
+                                if self.debug:
+                                    print('[ImgurDownloader] DNE: %s' %
+                                          path.split('/')[-1])
+                                return 0, 1
+                    except (FileNotFoundError, OSError):
+                        if self.debug:
+                            print('[ImgurDownloader] Warning: DNE image not '
+                                  'found at {}'.format(self.dne_path))
 
                 # proceed with downloading
                 urllib.request.urlretrieve(image_url, path)
@@ -388,7 +399,8 @@ class ImgurDownloader:
 
         It will check if bytes are equal to that of imgur does not exist image.
         """
-        dne_img = os.path.join(self.dir_root, 'imgur-dne.png')  # edit location if needed
+        # edit location if needed
+        dne_img = os.path.join(self.dir_root, 'imgur-dne.png')
         with open(dne_img, 'rb') as f:
             dne_data = bytearray(f.read())
         with open(img_path, 'rb') as f:
@@ -409,7 +421,8 @@ def slugify(value):
 
 @click.command()
 @click.option(
-    '--print-only', default=False, is_flag=True, help="Print download link only, no download.")
+    '--print-only', default=False, is_flag=True,
+    help="Print download link only, no download.")
 @click.argument('url', nargs=1, required=False)
 @click.argument('destination_folder', nargs=1, required=False)
 def main(url, destination_folder, print_only=False):
@@ -424,12 +437,14 @@ def main(url, destination_folder, print_only=False):
         downloader = ImgurDownloader(url)
 
         if not print_only:
-            print(("Found {0} images in album".format(downloader.num_images())))
+            print(("Found {0} images in album"
+                   .format(downloader.num_images())))
 
             exts = downloader.list_extensions()
             if exts is not None:
                 for i in exts:
-                    print(("Found {0} files with {1} extension".format(i[1], i[0])))
+                    print(("Found {0} files with {1} extension"
+                           .format(i[1], i[0])))
 
         # Called when an image is about to download:
         def print_image_progress(index, url, dest):
@@ -449,7 +464,7 @@ def main(url, destination_folder, print_only=False):
         if destination_folder:
             albumFolder = destination_folder
         else:
-            albumFolder = False
+            albumFolder = ''
 
         if not print_only:
             # Enough talk, let's save!

@@ -22,22 +22,32 @@ __path = dirname(abspath(__file__))
 # get module name from parent folder name
 # assumes the parent folder (repository name) is the same as the module name
 module_name = basename(__path)
+
+
+def get_version_from_init():
+    with open(join(__path, module_name, '__init__.py'), 'r') as init:
+        match = re.search("__version__\s*=\s*'([\w.-]+)'", init.read())
+    return match.group(1) if match is not None else None
+
 # attempt to find variable module_name.__init__.__version__
-__version__ = '0.1.0'
+__version__ = None
 try:
-    this_module = __import__(module_name + '.__init__')
-    __version__ = this_module.__version__
-    print('[setup.py] grabbed __version__ of {0} from {0}/__init__.py'
+    __version__ = get_version_from_init()
+    if __version__ is None:
+        print('[setup.py] Note: There was no __version__ variable within the '
+              '__init__.py of the {}'.format(module_name))
+    else:
+        print('[setup.py] grabbed __version__ of {0} from {0}/__init__.py'
+              .format(module_name))
+except (FileExistsError, FileNotFoundError) as e:
+    print(type(e), e)
+    print('[setup.py] Note: There was no __init__.py found within {}'
           .format(module_name))
-except ImportError:
-    print('[setup.py] Note: There was no __init__.py found within module')
-except AttributeError:
-    print('[setup.py] Note: There was no __version__ variable within the '
-          '__init__.py of the module')
+
 
 # -------------- Update the following variables --------------- #
 # prioritize using __version__ in module_name.__init__ if it's there
-version = '0.1.0' if '__version__' not in locals().keys() else __version__
+version = '0.1.0' if __version__ is None else __version__
 description = 'Python script/class to download an entire Imgur album in ' \
               ' one go into a folder of your choice'
 # ------------------------------------------------------------- #
@@ -47,8 +57,8 @@ def create_setup_cfg(callback=None):
     """Creates the setup.cfg file with basic metadata and calls the callback"""
     with open(join(__path, 'setup.cfg'), 'w') as config:
         config.write(
-            "[metadata]\nname = {module_name}\ndescription-file = {readme}"
-            .format(module_name=module_name, readme=readme_file_name))
+            "[metadata]\nname = {module_name}\ndescription-file = {file_name}"
+            .format(module_name=module_name, file_name=readme_file_name))
     if callback is not None:
         callback()
 

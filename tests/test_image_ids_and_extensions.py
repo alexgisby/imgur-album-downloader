@@ -1,6 +1,10 @@
 import os
-
 import pytest
+
+import sys
+from os.path import dirname, abspath, join
+__directory = dirname(abspath(__file__))
+sys.path.append(join(__directory, '../' * 1))
 
 from imgur_downloader import ImgurDownloader
 
