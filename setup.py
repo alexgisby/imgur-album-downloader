@@ -18,14 +18,14 @@ https://github.com/jtara1/misc_scripts/blob/master/misc_scripts/templates/setup.
 """
 
 # path to this file but not including this file
-__path = dirname(abspath(__file__))
+directory = dirname(abspath(__file__))
 # get module name from parent folder name
 # assumes the parent folder (repository name) is the same as the module name
-module_name = basename(__path)
+module_name = basename(directory)
 
 
 def get_version_from_init():
-    with open(join(__path, module_name, '__init__.py'), 'r') as init:
+    with open(join(module_name, '__init__.py'), 'r') as init:
         match = re.search("__version__\s*=\s*'([\w.-]+)'", init.read())
     return match.group(1) if match is not None else None
 
@@ -47,7 +47,7 @@ except (FileExistsError, FileNotFoundError) as e:
 
 # -------------- Update the following variables --------------- #
 # prioritize using __version__ in module_name.__init__ if it's there
-version = '0.1.0' if __version__ is None else __version__
+version = '0.0.0' if __version__ is None else __version__
 description = 'Python script/class to download an entire Imgur album in ' \
               ' one go into a folder of your choice'
 # ------------------------------------------------------------- #
@@ -55,7 +55,7 @@ description = 'Python script/class to download an entire Imgur album in ' \
 
 def create_setup_cfg(callback=None):
     """Creates the setup.cfg file with basic metadata and calls the callback"""
-    with open(join(__path, 'setup.cfg'), 'w') as config:
+    with open(join(directory, 'setup.cfg'), 'w') as config:
         config.write(
             "[metadata]\nname = {module_name}\ndescription-file = {file_name}"
             .format(module_name=module_name, file_name=readme_file_name))
@@ -66,7 +66,7 @@ def create_setup_cfg(callback=None):
 def change_rst_to_md_extension_in_cfg():
     """Replaces README.rst with README.md in setup.cfg"""
     try:
-        with open(join(__path, 'setup.cfg'), 'r+') as config:
+        with open(join(directory, 'setup.cfg'), 'r+') as config:
             text = config.read()
             text = re.sub('README.rst', 'README.md', text)
             config.seek(0)
@@ -79,12 +79,12 @@ def change_rst_to_md_extension_in_cfg():
 # Store text from README.rst or README.md to use in long description and
 # update setup.cfg to point to the correct readme if needed
 try:
-    with open(join(__path, 'README.rst')) as f:
+    with open(join(directory, 'README.rst')) as f:
         readme_file_name = 'README.rst'
         readme = f.read()
 except (FileNotFoundError, FileExistsError):
     try:
-        with open(join(__path, 'README.md')) as f:
+        with open(join(directory, 'README.md')) as f:
             readme_file_name = 'README.md'
             readme = f.read()
             change_rst_to_md_extension_in_cfg()
@@ -97,7 +97,7 @@ def get_install_requirements():
     requirements.txt"""
     requirements = []
     try:
-        with open(join(__path, 'requirements.txt'), 'r') as req_file:
+        with open(join(directory, 'requirements.txt'), 'r') as req_file:
             for line in req_file:
                 requirements.append(re.sub("\s", "", line))
     except (FileExistsError, FileNotFoundError):
@@ -108,7 +108,7 @@ def get_install_requirements():
 def update_cfg_module_name():
     """Replaces the module name in setup.cfg with module_name"""
     try:
-        with open(join(__path, 'setup.cfg'), 'r+') as config:
+        with open(join(directory, 'setup.cfg'), 'r+') as config:
             text = config.read()
             text = re.sub('name = module_name(_setup_cfg)?',
                           'name = {}'.format(module_name),
