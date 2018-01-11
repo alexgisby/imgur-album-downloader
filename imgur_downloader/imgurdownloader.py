@@ -90,7 +90,7 @@ class ImgurDownloader:
 
         # Check the URL is actually imgur:
         match = re.match(
-            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a|gallery|r)?/?(\w*)/?(\w*)(#[0-9]+)?(.\w*)?",  # NOQA
+            "(https?)://(www\.)?(i\.|m\.)?imgur\.com/(a/|gallery/|r/)?/?(\w*)/?(\w*)(#[0-9]+)?(.\w*)?",  # NOQA
             imgur_url)
         if not match:
             raise ImgurException("URL must be a valid Imgur Album")
@@ -266,33 +266,24 @@ class ImgurDownloader:
         """
         self.complete_callbacks.append(callback)
 
-    def save_images(self, foldername=''):
+    def save_images(self, folder_name=''):
         """
         Saves the images from the album into a folder given by foldername.
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
 
-        :param foldername: string that describes the (base) name of the folder
+        :param folder_name: string that describes the (base) name of the folder
             in which the image(s) are saved in (does not include full path)
         :return: final filenames of each file successfully downloaded, numb of
             images skipped
 
         """
         # Try and create the album folder:
-        albumFolder = ''
+        album_folder = '' if not folder_name else folder_name
         if len(self.imageIDs) > 1:
-            if foldername:
-                albumFolder = foldername
-            else:
-                albumFolder = self.album_title
-        elif len(self.imageIDs) == 1 and foldername:
-            albumFolder = foldername
-        else:
-            self.log.debug(
-                'Unexpected condition: foldername:{}|len of imageIDs:{}'
-                    .format(foldername, len(self.imageIDs)))
+            album_folder = self.album_title
 
-        dir_save = os.path.join(self.dir_download, albumFolder)
+        dir_save = os.path.join(self.dir_download, album_folder)
         downloaded = skipped = 0
 
         if not os.path.exists(dir_save):
@@ -470,7 +461,8 @@ def main(url, destination_folder, print_only=False):
             # Enough talk, let's save!
             downloader.save_images(albumFolder)
         else:
-            for img_id, ext in downloader.json_imageIDs:
+            # for img_id, ext in downloader.json_imageIDs:
+            for img_id, ext in downloader.imageIDs:
                 print('https://i.imgur.com/{}{}'.format(img_id, ext))
         exit()  # NOTE: may not be needed
 
