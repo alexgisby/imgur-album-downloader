@@ -15,7 +15,7 @@ Copyright Alex Gisby <alex@solution10.com>
 
 import sys
 import re
-import urllib.request, urllib.parse, urllib.error
+import requests
 import os
 import math
 from collections import Counter
@@ -64,17 +64,17 @@ class ImgurAlbumDownloader:
         fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
 
         try:
-            self.response = urllib.request.urlopen(url=fullListURL)
-            response_code = self.response.getcode()
+            self.response = requests.get(fullListURL)
+            response_code = self.response.status_code
         except Exception as e:
             self.response = False
             response_code = e.code
 
-        if not self.response or self.response.getcode() != 200:
+        if not self.response or self.response.status_code != requests.codes.ok:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
-        html = self.response.read().decode('utf-8')
+        html = self.response.text
         self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
         
         self.cnt = Counter()
@@ -156,7 +156,7 @@ class ImgurAlbumDownloader:
                 print ("Skipping, already exists.")
             else:
                 try:
-                    urllib.request.urlretrieve(image_url, path)
+                    requests.get(image_url, path)
                 except:
                     print ("Download failed.")
                     os.remove(path)
