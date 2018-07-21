@@ -1,7 +1,12 @@
 # imgur Album Downloader
 
 This is a simple Python script that contains a class and command line interface that
-allows you to download ann images at full resolution in an imgur album, all at once.
+allows you to download all images at full resolution in an Imgur album, all at once.
+
+The script relies on the Imgur page having a certain structure. Given that Imgur has 
+a) dropped support for its own Python imgur package, and b) has its own API which
+requires you to register your application (and does other things like limit your downloads
+to 12,500 images per day), this script isn't bulletproof, but it is useful.
 
 ## Requirements
 
