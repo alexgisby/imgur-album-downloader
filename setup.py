@@ -1,10 +1,8 @@
 from setuptools import setup
-from astroid.__pkginfo__ import description
-from IPython.core.release import long_description
 
 setup(
     name = 'Imgur Album Downloader',
-    url = 'http://github.com/jmcurran/imgur-album-downloader/tree/jmc001',
+    url = 'http://github.com/jmcurran/imgur-album-downloader/',
     author = 'Alex Gisby',
     author_email = 'alex@solution10.com',
     packages = ['ImgurAlbumDownloader'],
