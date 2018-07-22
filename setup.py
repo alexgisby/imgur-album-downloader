@@ -10,5 +10,4 @@ setup(
     version='0.1',
     license='MIT',
     description='Download a whole Imgur album in one go',
-    long_description=open('readme.md')
-)
+    long_description=open('readme.md').read()
