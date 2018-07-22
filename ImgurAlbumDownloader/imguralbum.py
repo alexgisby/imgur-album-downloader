@@ -129,11 +129,15 @@ class ImgurAlbumDownloader:
         self.complete_callbacks.append(callback)
 
 
-    def save_images(self, foldername=False):
+    def save_images(self, foldername = , useKey = false):
         """
         Saves the images from the album into a folder given by foldername.
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
+        
+        If addKey is true then the name of the image will be XX-YYYYYY
+        where XX is the image number and YYYYY is the album key (which is
+        a 'unique' Imgur created hash
         """
         # Try and create the album folder:
         if foldername:
@@ -149,7 +153,11 @@ class ImgurAlbumDownloader:
             image_url = "http://i.imgur.com/"+image[0]+image[1]
 
             prefix = "{:0>2}_".format(counter) ## should be good for up to 100 images
-            path = os.path.join(albumFolder, prefix + image[0] + image[1])
+            path = ""
+            if useKey:
+                path = os.path.join(albumFolder, prefix + self.album_key)
+            else:
+                path = os.path.join(albumFolder, prefix + image[0] + image[1])
 
             # Run the callbacks:
             for fn in self.image_callbacks:
