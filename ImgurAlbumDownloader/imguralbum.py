@@ -135,7 +135,7 @@ class ImgurAlbumDownloader:
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
         
-        If addKey is true then the name of the image will be XX-YYYYYY
+        If addKey is true then the name of the image will be YYYYYY_XX
         where XX is the image number and YYYYY is the album key (which is
         a 'unique' Imgur created hash
         """
@@ -152,12 +152,12 @@ class ImgurAlbumDownloader:
         for (counter, image) in enumerate(self.imageIDs, start=1):
             image_url = "http://i.imgur.com/"+image[0]+image[1]
 
-            prefix = "{:0>2}_".format(counter) ## should be good for up to 100 images
+            suffix = "_{:0>2}".format(counter) ## should be good for up to 100 images
             path = ""
             if useKey:
-                path = os.path.join(albumFolder, prefix + self.album_key)
+                path = os.path.join(albumFolder, self.album_key + suffix)
             else:
-                path = os.path.join(albumFolder, prefix + image[0] + image[1])
+                path = os.path.join(albumFolder, image[0] + suffix + image[1])
 
             # Run the callbacks:
             for fn in self.image_callbacks:
