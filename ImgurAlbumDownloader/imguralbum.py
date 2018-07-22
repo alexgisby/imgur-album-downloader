@@ -158,15 +158,16 @@ class ImgurAlbumDownloader:
                 print ("Skipping, already exists.")
             else:
                 try:
-					imageRequest = requests.get(image_url)
-					imageData = imageRequest.content
-       
-					im = Image.open(BytesIO(imageData))
-					w, h = im.size
-					im.close()
-					if not (w == 161 and h == 81): # this is the imgur image not found jpg
-						with open(path, 'wb') as fobj:
-							fobj.write(imageData)
+                    imageRequest = requests.get(image_url)
+                    imageData = imageRequest.content
+                    
+                    im = Image.open(BytesIO(imageData))
+                    w, h = im.size
+                    im.close()
+                    
+                    if not (w == 161 and h == 81): # this is the imgur image not found jpg
+                        with open(path, 'wb') as fobj:
+                            fobj.write(imageData)
                 except:
                     print ("Download failed.")
                     os.remove(path)

@@ -7,7 +7,7 @@ setup(
     author_email='alex@solution10.com',
     packages=find_packages(exclude=['tests*']),
     install_requires=['requests', 'pillow'],
-    version='0.2-004',
+    version='0.2-005',
     license='MIT',
     description='Download a whole Imgur album in one go',
     long_description=open('readme.md').read()
