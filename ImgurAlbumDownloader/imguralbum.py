@@ -160,7 +160,7 @@ class ImgurAlbumDownloader:
             suffix = "_{:0>2}".format(counter) ## should be good for up to 100 images
             path = ""
             if useKey:
-                path = os.path.join(albumFolder, self.album_key + suffix)
+                path = os.path.join(albumFolder, self.album_key + suffix + image[1])
             else:
                 path = os.path.join(albumFolder, image[0] + suffix + image[1])
 
