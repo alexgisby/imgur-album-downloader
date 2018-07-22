@@ -1,1 +1,1 @@
-import imguralbum
+import ImgurAlbumDownloader
