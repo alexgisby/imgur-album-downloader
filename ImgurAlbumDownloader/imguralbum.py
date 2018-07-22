@@ -72,7 +72,7 @@ class ImgurAlbumDownloader:
             self.response = False
             response_code = e.code
 
-        if not self.response or self.response.status_code != requests.codes.ok:
+        if not self.response or self.response.status_code != requests.codes['ok']:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
