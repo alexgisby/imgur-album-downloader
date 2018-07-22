@@ -129,7 +129,7 @@ class ImgurAlbumDownloader:
         self.complete_callbacks.append(callback)
 
 
-    def save_images(self, foldername = None, useKey = false):
+    def save_images(self, foldername = None, useKey = False):
         """
         Saves the images from the album into a folder given by foldername.
         If no foldername is given, it'll use the cwd and the album key.
