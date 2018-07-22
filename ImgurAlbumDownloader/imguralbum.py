@@ -148,10 +148,7 @@ class ImgurAlbumDownloader:
         for (counter, image) in enumerate(self.imageIDs, start=1):
             image_url = "http://i.imgur.com/"+image[0]+image[1]
 
-            prefix = "%0*d-" % (
-                int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
-                counter
-            )
+            prefix = "{:0>2}_".format(counter) ## should be good for up to 100 images
             path = os.path.join(albumFolder, prefix + image[0] + image[1])
 
             # Run the callbacks:
