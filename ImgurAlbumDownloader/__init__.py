@@ -1,2 +1,1 @@
-from ImgurAlbum import ImgurAlbumDownloader
-from ImgurAlbum import ImgurAlbumException
+import imguralbum
