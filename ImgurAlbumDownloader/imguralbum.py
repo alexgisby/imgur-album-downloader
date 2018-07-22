@@ -44,11 +44,16 @@ class ImgurAlbumException(Exception):
 
 
 class ImgurAlbumDownloader:
-    def __init__(self, album_url):
+    def __init__(self, album_url, extn = None):
         """
         Constructor. Pass in the album_url that you want to download.
         """
         self.album_url = album_url
+        
+        if extn==None:
+            self.extn = 'jpe?g|png|gif'
+        else:
+            self.extn = extn
 
         # Callback members:
         self.image_callbacks = []
@@ -77,7 +82,7 @@ class ImgurAlbumDownloader:
 
         # Read in the images now so we can get stats and stuff:
         html = self.response.text
-        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
+        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.(' + self.extn + '))".*?', html)
         
         self.cnt = Counter()
         for i in self.imageIDs:
