@@ -84,6 +84,11 @@ class ImgurAlbumDownloader:
         html = self.response.text
         self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.(' + self.extn + '))".*?', html)
         
+        ## this is likely to have a lot of duplicates, so let's kill those
+        self.imageIDs = list(set([i[0:2] for i in self.imageIDs]))
+        
+        
+        
         self.cnt = Counter()
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
@@ -220,7 +225,7 @@ if __name__ == '__main__':
         if len(args) == 3:
             albumFolder = args[2]
         else:
-            albumFolder = False
+            albumFolder = None
 
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
