@@ -153,16 +153,16 @@ class ImgurDownloader:
         if self.debug:
             print('album_title: ' + self.album_title)  # debug
 
-        self.imageIDs = self._init_image_ids_with_regex(html=html)
         self.json_imageIDs = list(self._init_image_ids_with_json(html=html))
+        self.imageIDs = self.json_imageIDs
 
         if self.debug:
             print("imageIDs count: %s" % str(len(self.imageIDs)))  # debug
             print("imageIDs:\n%s" % str(self.imageIDs))  # debug
 
-        self.cnt = Counter()
+        self.extension_counter = Counter()
         for i in self.imageIDs:
-            self.cnt[i[1]] += 1
+            self.extension_counter[i[1]] += 1
 
     @staticmethod
     def get_all_format_url(album_url):
@@ -205,7 +205,9 @@ class ImgurDownloader:
                 self.log.debug('Unknown json search key: {}'.format(json_search))
         except Exception as e:
             raise Exception('JSON parse failed: {}'.format(e))
-        yield image_ids
+
+        if image_ids:
+            yield image_ids
 
     def _init_image_ids_with_regex(self, html):
         """get section from html that contains image ID(s) and file extensions 
@@ -238,9 +240,9 @@ class ImgurDownloader:
         """
         Returns list with occurrences of extensions in descending order.
         """
-        if hasattr(self, "cnt"):
-            if self.cnt:
-                return self.cnt.most_common()
+        if hasattr(self, "extension_counter"):
+            if self.extension_counter:
+                return self.extension_counter.most_common()
 
     def get_album_key(self):
         """
