@@ -8,6 +8,11 @@ a) dropped support for its own Python imgur package, and b) has its own API whic
 requires you to register your application (and does other things like limit your downloads
 to 12,500 images per day), this script isn't bulletproof, but it is useful.
 
+## Installation 
+
+The latest version can be installed using `pip`:
+    pip install --upgrade git+https://github.com/jmcurran/imgur-album-downloader.git@jmc001
+
 ## Requirements
 
 Python >= 3.3

@@ -17,7 +17,6 @@ import sys
 import re
 import requests
 import os
-import math
 from collections import Counter
 from PIL import Image
 from io import BytesIO
@@ -62,7 +61,7 @@ class ImgurAlbumDownloader:
         # Check the URL is actually imgur:
         match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery)/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
         if not match:
-            raise ImgurAlbumException("URL must be a valid Imgur Album")
+            raise ImgurAlbumException("URL must be a valid Imgur Album {}".format(album_url))
 
         self.protocol = match.group(1)
         self.album_key = match.group(4)
@@ -86,10 +85,11 @@ class ImgurAlbumDownloader:
         
         ## this is likely to have a lot of duplicates, so let's kill those
         self.imageIDs = list(set([i[0:2] for i in self.imageIDs]))
-        
+        self.imageURLs = ["http://i.imgur.com/" + i[0] + i[1] for i in self.imageIDs]
         
         
         self.cnt = Counter()
+        
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
 
@@ -190,6 +190,7 @@ class ImgurAlbumDownloader:
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
             fn()
+
 
 
 if __name__ == '__main__':
