@@ -15,10 +15,11 @@ Copyright Alex Gisby <alex@solution10.com>
 
 import sys
 import re
-import urllib.request, urllib.parse, urllib.error
+import requests
 import os
-import math
 from collections import Counter
+from PIL import Image
+from io import BytesIO
 
 
 help_message = """
@@ -42,11 +43,16 @@ class ImgurAlbumException(Exception):
 
 
 class ImgurAlbumDownloader:
-    def __init__(self, album_url):
+    def __init__(self, album_url, extn = None):
         """
         Constructor. Pass in the album_url that you want to download.
         """
         self.album_url = album_url
+        
+        if extn==None:
+            self.extn = 'jpe?g|png|gif'
+        else:
+            self.extn = extn
 
         # Callback members:
         self.image_callbacks = []
@@ -55,7 +61,7 @@ class ImgurAlbumDownloader:
         # Check the URL is actually imgur:
         match = re.match("(https?)\:\/\/(www\.)?(?:m\.)?imgur\.com/(a|gallery)/([a-zA-Z0-9]+)(#[0-9]+)?", album_url)
         if not match:
-            raise ImgurAlbumException("URL must be a valid Imgur Album")
+            raise ImgurAlbumException("URL must be a valid Imgur Album {}".format(album_url))
 
         self.protocol = match.group(1)
         self.album_key = match.group(4)
@@ -64,20 +70,26 @@ class ImgurAlbumDownloader:
         fullListURL = "http://imgur.com/a/" + self.album_key + "/layout/blog"
 
         try:
-            self.response = urllib.request.urlopen(url=fullListURL)
-            response_code = self.response.getcode()
+            self.response = requests.get(fullListURL)
+            response_code = self.response.status_code
         except Exception as e:
             self.response = False
             response_code = e.code
 
-        if not self.response or self.response.getcode() != 200:
+        if not self.response or self.response.status_code != requests.codes['ok']:
             raise ImgurAlbumException("Error reading Imgur: Error Code %d" % response_code)
 
         # Read in the images now so we can get stats and stuff:
-        html = self.response.read().decode('utf-8')
-        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.[a-zA-Z0-9]+)".*?', html)
+        html = self.response.text
+        self.imageIDs = re.findall('.*?{"hash":"([a-zA-Z0-9]+)".*?"ext":"(\.(' + self.extn + '))".*?', html)
+        
+        ## this is likely to have a lot of duplicates, so let's kill those
+        self.imageIDs = list(set([i[0:2] for i in self.imageIDs]))
+        self.imageURLs = ["http://i.imgur.com/" + i[0] + i[1] for i in self.imageIDs]
+        
         
         self.cnt = Counter()
+        
         for i in self.imageIDs:
             self.cnt[i[1]] += 1
 
@@ -122,14 +134,18 @@ class ImgurAlbumDownloader:
         self.complete_callbacks.append(callback)
 
 
-    def save_images(self, foldername=False):
+    def save_images(self, foldername = None, useKey = False):
         """
         Saves the images from the album into a folder given by foldername.
         If no foldername is given, it'll use the cwd and the album key.
         And if the folder doesn't exist, it'll try and create it.
+        
+        If addKey is true then the name of the image will be YYYYYY_XX
+        where XX is the image number and YYYYY is the album key (which is
+        a 'unique' Imgur created hash
         """
         # Try and create the album folder:
-        if foldername:
+        if foldername != None:
             albumFolder = foldername
         else:
             albumFolder = self.album_key
@@ -141,11 +157,12 @@ class ImgurAlbumDownloader:
         for (counter, image) in enumerate(self.imageIDs, start=1):
             image_url = "http://i.imgur.com/"+image[0]+image[1]
 
-            prefix = "%0*d-" % (
-                int(math.ceil(math.log(len(self.imageIDs) + 1, 10))),
-                counter
-            )
-            path = os.path.join(albumFolder, prefix + image[0] + image[1])
+            suffix = "_{:0>2}".format(counter) ## should be good for up to 100 images
+            path = ""
+            if useKey:
+                path = os.path.join(albumFolder, self.album_key + suffix + image[1])
+            else:
+                path = os.path.join(albumFolder, image[0] + suffix + image[1])
 
             # Run the callbacks:
             for fn in self.image_callbacks:
@@ -156,7 +173,16 @@ class ImgurAlbumDownloader:
                 print ("Skipping, already exists.")
             else:
                 try:
-                    urllib.request.urlretrieve(image_url, path)
+                    imageRequest = requests.get(image_url)
+                    imageData = imageRequest.content
+                    
+                    im = Image.open(BytesIO(imageData))
+                    w, h = im.size
+                    im.close()
+                    
+                    if not (w == 161 and h == 81): # this is the imgur image not found jpg
+                        with open(path, 'wb') as fobj:
+                            fobj.write(imageData)
                 except:
                     print ("Download failed.")
                     os.remove(path)
@@ -164,6 +190,7 @@ class ImgurAlbumDownloader:
         # Run the complete callbacks:
         for fn in self.complete_callbacks:
             fn()
+
 
 
 if __name__ == '__main__':
@@ -199,7 +226,7 @@ if __name__ == '__main__':
         if len(args) == 3:
             albumFolder = args[2]
         else:
-            albumFolder = False
+            albumFolder = None
 
         # Enough talk, let's save!
         downloader.save_images(albumFolder)
