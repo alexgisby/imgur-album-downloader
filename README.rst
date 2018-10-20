@@ -114,26 +114,26 @@ Command Line Usage
 
 .. code:: bash
 
- $ imgurdownloader [album URL] [folder to save to]
+ $ imgur_downloader [album URL] [folder to save to]
 
 Download all images from an album into the folder /Users/alex/images/downloaded
 
 .. code:: bash
 
- $ imgurdownloader http://imgur.com/a/uOOju /Users/alex/images/downloaded
+ $ imgur_downloader http://imgur.com/a/uOOju /Users/alex/images/downloaded
 
 Downloads all images and puts them into an album in the current directory called "uOOju"
 
 .. code:: bash
 
- $ imgurdownloader http://imgur.com/a/uOOju
+ $ imgur_downloader http://imgur.com/a/uOOju
 
 
 It can also be used with downloader such as `wget` using `--print-only` option.
 
 .. code:: bash
 
- imgurdownloader --print-only http://imgur.com/a/SVq41 | xargs wget
+ $ imgur_downloader --print-only http://imgur.com/a/SVq41 | xargs wget
 
 
 Class Usage
