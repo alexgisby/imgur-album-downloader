@@ -7,7 +7,7 @@ Created on Sat Aug 13 09:40:27 2016
 
 import sys
 import os
-sys.path.append(os.path.dirname(__file__), '..')
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import imgur_downloader.imgurdownloader as imguralbum
 import os
 import time
@@ -38,8 +38,8 @@ def test():
     print()
     imguralbum.ImgurDownloader(url3, dir1, file_name='url3', debug=True).save_images()
     print()
-    imguralbum.ImgurDownloader(url4, dir1, file_name='url4', debug=True).save_images()
-    print()
+    # imguralbum.ImgurDownloader(url4, dir1, file_name='url4', debug=True).save_images()
+    # print()
     imguralbum.ImgurDownloader(url5, dir1, file_name='url5', debug=True).save_images()
     print()
     imguralbum.ImgurDownloader(url6, dir1, file_name='url6', debug=True).save_images()
@@ -58,7 +58,10 @@ def test():
     print()
     imguralbum.ImgurDownloader(url11, dir1, file_name='url11', debug=True).save_images()
     print()
-    imguralbum.ImgurDownloader(url12, dir1, file_name='url12', debug=True).save_images()
+    # imguralbum.ImgurDownloader(url12, dir1, file_name='url12', debug=True).save_images()
+    # print()
+    imguralbum.ImgurDownloader(url11, dir1,
+                               debug=True).save_images('my folder here 123')
 
 
 def test_dne(path):

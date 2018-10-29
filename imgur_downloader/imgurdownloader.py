@@ -283,7 +283,7 @@ class ImgurDownloader:
         # Try and create the album folder:
         album_folder = '' if not folder_name else folder_name
         if len(self.imageIDs) > 1:
-            album_folder = self.album_title
+            album_folder = album_folder or self.album_title
 
         dir_save = os.path.join(self.dir_download, album_folder)
         downloaded = skipped = 0
