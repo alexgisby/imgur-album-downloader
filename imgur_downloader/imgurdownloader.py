@@ -327,7 +327,7 @@ class ImgurDownloader:
                     slugify(os.path.basename(path))))
 
             downloaded += dl
-            skipped += skipped
+            skipped += skp
             if dl != 0:
                 final_filenames.append(filename)
 
