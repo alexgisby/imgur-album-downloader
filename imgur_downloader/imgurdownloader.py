@@ -349,42 +349,42 @@ class ImgurDownloader:
                 else False
 
         dl, skp = 0, 0
-        if os.path.isfile(path):
-            raise FileExistsException(
-                '%s already exists.' % os.path.basename(path))
-        else:
-            try:
-                request = urllib.request.urlopen(image_url)
-                redirect_url = request.geturl()
+        try:
+            if os.path.isfile(path):
+                raise FileExistsError(
+                    '%s already exists.' % os.path.basename(path))
 
-                # check if image did not exist and url got redirected
-                if image_url != redirect_url:
-                    self.log.debug('url, redirected_url = %s, %s'
-                                   % (image_url, redirect_url))
-                    if redirect_url == 'http://imgur.com/':
-                        raise HTTPError(
-                            404, "Image redirected to non-image link",
-                            redirect_url, None, None)
+            request = urllib.request.urlopen(image_url)
+            redirect_url = request.geturl()
 
-                # check if image is imgur dne image before we download anything
-                if self.delete_dne:
-                    try:
-                        with open(self.dne_path, 'rb') as dne_file:
-                            if are_files_equal(request, dne_file):
-                                if self.debug:
-                                    print('[ImgurDownloader] DNE: %s' %
-                                          path.split('/')[-1])
-                                return 0, 1
-                    except (FileNotFoundError, OSError):
-                        if self.debug:
-                            print('[ImgurDownloader] Warning: DNE image not '
-                                  'found at {}'.format(self.dne_path))
+            # check if image did not exist and url got redirected
+            if image_url != redirect_url:
+                self.log.debug('url, redirected_url = %s, %s'
+                               % (image_url, redirect_url))
+                if redirect_url == 'http://imgur.com/':
+                    raise HTTPError(
+                        404, "Image redirected to non-image link",
+                        redirect_url, None, None)
 
-                # proceed with downloading
-                urllib.request.urlretrieve(image_url, path)
-                dl = 1
-            except (HTTPError, FileExistsError):
-                skp = 1
+            # check if image is imgur dne image before we download anything
+            if self.delete_dne:
+                try:
+                    with open(self.dne_path, 'rb') as dne_file:
+                        if are_files_equal(request, dne_file):
+                            if self.debug:
+                                print('[ImgurDownloader] DNE: %s' %
+                                      path.split('/')[-1])
+                            return 0, 1
+                except (FileNotFoundError, OSError):
+                    if self.debug:
+                        print('[ImgurDownloader] Warning: DNE image not '
+                              'found at {}'.format(self.dne_path))
+
+            # proceed with downloading
+            urllib.request.urlretrieve(image_url, path)
+            dl = 1
+        except (HTTPError, FileExistsError):
+            skp = 1
         return dl, skp
 
     def is_imgur_dne_image(self, img_path):
