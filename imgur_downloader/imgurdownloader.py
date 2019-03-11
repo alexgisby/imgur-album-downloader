@@ -19,6 +19,7 @@ import json
 import logging
 import math
 import os
+from os.path import join, abspath
 import re
 import urllib.error
 import urllib.parse
@@ -285,7 +286,7 @@ class ImgurDownloader:
         if len(self.imageIDs) > 1:
             album_folder = album_folder or self.album_title
 
-        dir_save = os.path.join(self.dir_download, album_folder)
+        dir_save = abspath(join(self.dir_download, album_folder))
         downloaded = skipped = 0
 
         if not os.path.exists(dir_save):
