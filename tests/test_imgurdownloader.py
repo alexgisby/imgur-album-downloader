@@ -29,13 +29,13 @@ def test_get_all_format_url(url, exp_res):
 
 def test_redownload():
     url = 'https://imgur.com/gallery/4bv41a0'
-    path = abspath(join(__file__, '..', 'my-downloads'))
-    imgur = ImgurDownloader(url)
+    path = (join(__file__, '..', 'my-downloads'))
+    imgur = ImgurDownloader(url, dir_download=path)
 
-    file_names, skipped = imgur.save_images(path)
+    file_names, skipped = imgur.save_images()
     assert(skipped == 0)
 
-    _, skipped2 = imgur.direct_download(url, path)
+    _, skipped2 = imgur.save_images()
     assert(skipped2 == 1)
 
     os.remove(join(path, file_names[0]))
