@@ -88,6 +88,7 @@ def update_cfg_module_name():
                           'name = {}'.format(module_name),
                           text)
             config.seek(0)
+            config.truncate()
             config.write(text)
     except (FileNotFoundError, FileExistsError):
         create_setup_cfg(update_cfg_module_name)
