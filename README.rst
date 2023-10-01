@@ -2,6 +2,12 @@
 Imgur Downloader
 ================
 
+Deprecated in favor of gallery-dl (https://github.com/mikf/gallery-dl/tree/master)
+
+------
+
+Check for support for this there or report an issue there.
+
 This is a simple Python script that contains a class and command line interface
 that allows you to download ann images at full resolution with any imgur link, all at once.
 
